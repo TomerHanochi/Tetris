@@ -1,7 +1,7 @@
 import sys
 import pygame as pg
 
-from tetris.utils.colors import Colors
+from tetris.utils.assets import Colors, Fonts
 
 
 class Tetris:
