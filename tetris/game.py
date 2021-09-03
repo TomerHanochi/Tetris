@@ -2,14 +2,31 @@ import sys
 import pygame as pg
 
 from tetris.utils.assets import Colors, Fonts
+from tetris.components.board import Board
 
 
 class Tetris:
     def __init__(self) -> None:
         pg.init()
 
-        self.__size = self.__width, self.__height = 900, 900
+        self.__size = self.__w, self.__h = 900, 900
         self.__window = pg.display.set_mode(self.size)
+
+        block_size = 35
+        self.__board = Board(block_size)
+
+    def run(self) -> None:
+        while True:
+            self.window.fill(Colors.black)
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+
+            self.board.draw()
+
+            pg.display.flip()
 
     @property
     def window(self) -> pg.Surface:
@@ -21,19 +38,12 @@ class Tetris:
 
     @property
     def height(self) -> int:
-        return self.__height
+        return self.__h
 
     @property
     def width(self) -> int:
-        return self.__width
+        return self.__w
 
-    def run(self) -> None:
-        while True:
-            self.window.fill(Colors.black)
-
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-
-            pg.display.flip()
+    @property
+    def board(self) -> Board:
+        return self.__board

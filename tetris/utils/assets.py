@@ -2,7 +2,7 @@ import pygame as pg
 
 
 class AssetsType(type):
-    def __getattr__(cls, item) -> tuple[int, int, int] or pg.font.Font or pg.Surface:
+    def __getattr__(cls, item: str) -> tuple[int, int, int] or pg.font.Font:
         try:
             return cls.assets[item]
         except KeyError:
@@ -21,5 +21,5 @@ class Fonts(metaclass=AssetsType):
         pg.font.init()
 
     assets = {
-        
+
     }
