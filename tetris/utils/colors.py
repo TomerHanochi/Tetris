@@ -1,4 +1,4 @@
-class ColorPaletteType(type):
+class ColorsType(type):
     def __getattr__(cls, item) -> tuple[int, int, int]:
         try:
             return cls.palette[item]
@@ -6,7 +6,7 @@ class ColorPaletteType(type):
             raise KeyError(f'{item} doesn\'t exist in the color palette')
 
 
-class ColorPalette(metaclass=ColorPaletteType):
+class Colors(metaclass=ColorsType):
     palette = {
         'black': (0, 0, 0),
         'white': (255, 255, 255),
@@ -14,5 +14,5 @@ class ColorPalette(metaclass=ColorPaletteType):
 
 
 if __name__ == '__main__':
-    for color_name in ColorPalette.palette:
-        print(f'{color_name}: {getattr(ColorPalette, color_name)}')
+    for color_name in Colors.palette:
+        print(f'{color_name}: {getattr(Colors, color_name)}')

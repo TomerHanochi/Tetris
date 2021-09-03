@@ -1,7 +1,7 @@
 import sys
 import pygame as pg
 
-from tetris.utils.color_palette import ColorPalette
+from tetris.utils.colors import Colors
 
 
 class Tetris:
@@ -29,7 +29,7 @@ class Tetris:
 
     def run(self) -> None:
         while True:
-            self.window.fill(ColorPalette.black)
+            self.window.fill(Colors.black)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
