@@ -1,9 +1,5 @@
-from tetris.game import Tetris
-
-
 def main() -> None:
-    game = Tetris()
-    game.run()
+    pass
 
 
 if __name__ == '__main__':
