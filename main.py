@@ -1,5 +1,9 @@
+from tetris.controller import Controller
+
+
 def main() -> None:
-    pass
+    game = Controller()
+    game.run()
 
 
 if __name__ == '__main__':
