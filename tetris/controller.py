@@ -31,4 +31,9 @@ class Controller:
 
     def run(self) -> None:
         while True:
+            self.__model.update()
             self.__view.update()
+
+    @property
+    def model(self) -> Model:
+        return self.__model
