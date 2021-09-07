@@ -30,14 +30,12 @@ class View:
 
         # draws all existing blocks in the grid
         for block in self.__controller.model.blocks:
-            rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
-            self.__window.fill(block.color, rect)
+            if block.in_board:
+                rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
+                self.__window.fill(block.color, rect)
 
     def update(self) -> None:
         self.__window.fill(Colors.background_color)
-
-        for event in pg.event.get():
-            self.__controller.handle(event.type)
 
         self.draw_grid()
 

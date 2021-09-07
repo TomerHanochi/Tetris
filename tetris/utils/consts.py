@@ -3,3 +3,4 @@ class Consts:
     BLOCK_SIZE = 35
     GRID_WIDTH = 10
     GRID_HEIGHT = 20
+    NEXT_SET_SIZE = 3
