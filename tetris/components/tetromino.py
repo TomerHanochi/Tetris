@@ -10,9 +10,9 @@ ROTATIONS = {
     ],
     'I': [
         [(0, 1), (1, 1), (2, 1), (3, 1)],
-        [(2, 0), (2, 1), (2, 2), (2, 3)],
-        [(0, 2), (1, 2), (2, 2), (3, 2)],
         [(1, 0), (1, 1), (1, 2), (1, 3)],
+        [(0, 2), (1, 2), (2, 2), (3, 2)],
+        [(2, 0), (2, 1), (2, 2), (2, 3)],
     ],
     'T': [
         [(1, 0), (0, 1), (1, 1), (2, 1)],
@@ -22,7 +22,7 @@ ROTATIONS = {
     ],
     'S': [
         [(1, 0), (2, 0), (0, 1), (1, 1)],
-        [(0, 1), (1, 1), (2, 1), (2, 2)],
+        [(1, 0), (1, 1), (2, 1), (2, 2)],
         [(1, 1), (2, 1), (0, 2), (1, 2)],
         [(0, 0), (0, 1), (1, 1), (1, 2)],
     ],
@@ -40,7 +40,7 @@ ROTATIONS = {
     ],
     'J': [
         [(0, 1), (1, 1), (2, 1), (2, 0)],
-        [(1, 0), (1, 1), (1, 2), (0, 2)],
+        [(1, 0), (1, 1), (1, 2), (2, 2)],
         [(0, 1), (1, 1), (2, 1), (0, 2)],
         [(1, 0), (1, 1), (1, 2), (0, 0)],
     ],
@@ -52,36 +52,37 @@ class Tetromino:
         self.__color = getattr(Colors, name)
         self.__rotations = ROTATIONS[name]
         self.__rotation = 0
-        offset = 0  # TODO change starting location of tetrominoes
+        # TODO change starting location of tetrominoes
+        self.__x = 0
+        self.__y = -4
         self.blocks = [
-            Block(i, j, self.__color) for (i, j) in self.rotation
+            Block(self.__x + i, self.__y + j, self.__color) for (i, j) in self.rotation
         ]
 
     def rotate_right(self) -> None:
         """Rotates the piece right, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation + 1) % len(self.__rotations)
+        for block, (i, j) in zip(self.blocks, self.rotation):
+            block.i = self.__x + i
+            block.j = self.__y + j
         if self.leftest < 0 or self.rightest >= Consts.GRID_WIDTH:
             self.rotate_left()
-        else:
-            for block, (i, j) in zip(self.blocks, self.rotation):
-                block.i = i
-                block.j = j
 
     def rotate_left(self) -> None:
         """Rotates the piece left, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation - 1) % len(self.__rotations)
+        for block, (i, j) in zip(self.blocks, self.rotation):
+            block.i = self.__x + i
+            block.j = self.__y + j
         if self.leftest < 0 or self.rightest >= Consts.GRID_WIDTH:
             self.rotate_right()
-        else:
-            for block, (i, j) in zip(self.blocks, self.rotation):
-                block.i = i
-                block.j = j
 
     def can_move_right(self, blocks) -> bool:
         return (self.rightest < Consts.GRID_WIDTH - 1 and
                 all(not block.collide_right(other) for other in blocks for block in self.blocks))
 
     def move_right(self) -> None:
+        self.__x += 1
         for block in self.blocks:
             block.move_right()
 
@@ -90,6 +91,7 @@ class Tetromino:
                 all(not block.collide_left(other) for other in blocks for block in self.blocks))
 
     def move_left(self) -> None:
+        self.__x -= 1
         for block in self.blocks:
             block.move_left()
 
@@ -98,6 +100,7 @@ class Tetromino:
                 all(not block.collide_down(other) for other in blocks for block in self.blocks))
 
     def move_down(self, speed) -> None:
+        self.__y += speed
         for block in self.blocks:
             block.move_down(speed)
 
