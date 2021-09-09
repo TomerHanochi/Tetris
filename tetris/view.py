@@ -24,8 +24,12 @@ class View:
                 image = getattr(Images, block.parent)
                 self.__window.blit(image, rect)
 
-    def draw_hint_tetromino(self, x: int, y: int, block_size: int) -> None:
-        pass
+    def draw_ghost_tetromino(self, x: int, y: int, block_size: int) -> None:
+        ghost_tetromino = self.__model.ghost_tetromino
+        for block in ghost_tetromino.blocks:
+            rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
+            image = getattr(Images, block.parent)
+            self.__window.blit(image, rect)
 
     def draw_existing_blocks(self, x: int, y: int, block_size: int):
         for block in self.__model.blocks:
@@ -37,11 +41,13 @@ class View:
     def draw_board(self) -> None:
         block_size = Consts.BLOCK_SIZE
         x = (self.__w - Consts.GRID_WIDTH * block_size) / 2
-        y = (self.__h - Consts.GRID_HEIGHT * block_size) / 2
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) / 2
 
         self.draw_grid(x - block_size, y - block_size)
 
         self.draw_current_tetromino(x, y, block_size)
+
+        self.draw_ghost_tetromino(x, y, block_size)
 
         self.draw_existing_blocks(x, y, block_size)
 

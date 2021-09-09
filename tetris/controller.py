@@ -29,6 +29,13 @@ class Controller:
                 self.__model.drop_tetromino()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
                 pass
+        elif event.type == pg.KEYUP:
+            if event.key == pg.K_RIGHT:
+                pass
+            elif event.key == pg.K_LEFT:
+                pass
+            elif event.key == pg.K_DOWN:
+                pass
 
     def run(self) -> None:
         while True:

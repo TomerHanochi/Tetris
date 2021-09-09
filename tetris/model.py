@@ -2,13 +2,15 @@ from tetris.utils.consts import Consts
 from tetris.components.block import Block
 from tetris.components.tetromino import Tetromino
 from tetris.components.tetromino_set import TetrominoSet
+from tetris.components.ghost_tetromino import GhostTetromino
 
 
 class Model:
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
-        self.__cur = self.__tetromino_set.remove()
+        self.__cur_tetromino = self.__tetromino_set.remove()
         self.__blocks = []
+        self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, self.blocks)
 
     def update(self, dt: int) -> None:
         if self.terminal:
@@ -24,7 +26,7 @@ class Model:
                 if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
                     self.__tetromino_set.generate_new_tetrominoes()
 
-                self.__cur = self.__tetromino_set.remove()
+                self.__cur_tetromino = self.__tetromino_set.remove()
 
     def move_tetromino_right(self) -> None:
         if self.cur_tetromino.can_move_right(self.blocks):
@@ -81,7 +83,12 @@ class Model:
 
     @property
     def cur_tetromino(self) -> Tetromino:
-        return self.__cur
+        return self.__cur_tetromino
+
+    @property
+    def ghost_tetromino(self) -> GhostTetromino:
+        self.__ghost_tetromino.update(self.cur_tetromino, self.blocks)
+        return self.__ghost_tetromino
 
     @property
     def blocks(self) -> list[Block]:

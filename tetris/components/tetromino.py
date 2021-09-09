@@ -4,6 +4,7 @@ from tetris.utils.consts import Consts
 
 class Tetromino:
     def __init__(self, name: str) -> None:
+        self.name = name
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         # TODO change starting location of tetrominoes
@@ -72,3 +73,11 @@ class Tetromino:
     def rotation(self) -> list[tuple[int, int]]:
         """Returns the current rotation"""
         return self.__rotations[self.__rotation]
+
+    @property
+    def x(self) -> int:
+        return int(self.__x)
+
+    @property
+    def y(self) -> int:
+        return int(self.__y)
