@@ -24,12 +24,14 @@ class Controller:
             elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
                 self.__model.rotate_tetromino_left()
             elif event.key == pg.K_DOWN:
+                # TODO soft drop
                 pass
             elif event.key == pg.K_SPACE:
                 self.__model.drop_tetromino()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
-                pass
+                self.__model.hold()
         elif event.type == pg.KEYUP:
+            # TODO keyup
             if event.key == pg.K_RIGHT:
                 pass
             elif event.key == pg.K_LEFT:

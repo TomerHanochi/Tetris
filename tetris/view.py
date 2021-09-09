@@ -41,15 +41,28 @@ class View:
         self.draw_border(x, y, width, height)
 
     def draw_next(self) -> None:
+        width, height = 7, Consts.NEXT_SET_SIZE * 3 + 1
         x = self.block_size
-        y = (self.__h - Consts.GRID_HEIGHT * self.block_size) / 2 + 3 * self.block_size
-        width, height = 8, Consts.NEXT_SET_SIZE * 3 + 1
+        y = (self.__h - Consts.GRID_HEIGHT * self.block_size) * .5 + 3 * self.block_size
         self.draw_border(x, y, width, height)
 
         for j, tetromino in enumerate(self.__model.next):
-            pos_x = x + (width - tetromino.width - 1) * self.block_size / 2
+            pos_x = x + (width - tetromino.width - 1) * self.block_size * .5
             pos_y = y + (j * 3 + 6) * self.block_size
             for block in tetromino.blocks:
+                self.draw_block(pos_x, pos_y, block)
+
+    def draw_held(self) -> None:
+        width, height = 7, 4
+        x = Consts.SCREEN_SIZE[0] - (width + 1) * self.block_size
+        y = (self.__h - Consts.GRID_HEIGHT * self.block_size) * .5 + 3 * self.block_size
+        self.draw_border(x, y, width, height)
+
+        if self.__model.held_tetromino is not None:
+            pos_x = x + (width - self.__model.held_tetromino.width - 1) * self.block_size * .5
+            pos_y = y + (height - self.__model.held_tetromino.height + 1) * self.block_size * .5 + \
+                4 * self.block_size
+            for block in self.__model.held_tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
     def draw_current_tetromino(self, x: int, y: int):
@@ -65,14 +78,14 @@ class View:
 
     def draw_board(self) -> None:
         block_size = Consts.BLOCK_SIZE
-        x = (self.__w - (Consts.GRID_WIDTH - 1) * block_size) / 2
-        y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) / 2
+        x = (self.__w - Consts.GRID_WIDTH * block_size) * .5
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) * .5
 
         self.draw_board_border(x - block_size, y - block_size)
 
-        self.draw_current_tetromino(x, y)
-
         self.draw_ghost_tetromino(x, y)
+
+        self.draw_current_tetromino(x, y)
 
         self.draw_existing_blocks(x, y)
 
@@ -83,6 +96,7 @@ class View:
 
         self.draw_board()
         self.draw_next()
+        self.draw_held()
 
         pg.display.flip()
 

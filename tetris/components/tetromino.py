@@ -4,7 +4,7 @@ from tetris.utils.consts import Consts
 
 class Tetromino:
     def __init__(self, name: str) -> None:
-        self.name = name
+        self.__name = name
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         # TODO change starting location of tetrominoes
@@ -20,7 +20,7 @@ class Tetromino:
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftest.i < 0 or self.rightest.i >= Consts.GRID_WIDTH:
+        if self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH:
             self.rotate_left()
 
     def rotate_left(self) -> None:
@@ -29,11 +29,11 @@ class Tetromino:
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftest.i < 0 or self.rightest.i >= Consts.GRID_WIDTH:
+        if self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH:
             self.rotate_right()
 
     def can_move_right(self, blocks) -> bool:
-        return (self.rightest.can_move_right and
+        return (self.rightmost.can_move_right and
                 all(not block.collide_right(other) for other in blocks for block in self.blocks))
 
     def move_right(self) -> None:
@@ -42,7 +42,7 @@ class Tetromino:
             block.move_right()
 
     def can_move_left(self, blocks) -> bool:
-        return (self.leftest.can_move_left and
+        return (self.leftmost.can_move_left and
                 all(not block.collide_left(other) for other in blocks for block in self.blocks))
 
     def move_left(self) -> None:
@@ -60,14 +60,24 @@ class Tetromino:
             block.move_down(speed)
 
     @property
-    def rightest(self) -> Block:
-        """Returns the rightest index in the current rotation"""
+    def rightmost(self) -> Block:
+        """Returns the rightmost index in the current rotation"""
         return max(self.blocks, key=lambda block: block.i)
 
     @property
-    def leftest(self) -> Block:
-        """Returns the leftest index in the current rotation"""
+    def leftmost(self) -> Block:
+        """Returns the leftmost index in the current rotation"""
         return min(self.blocks, key=lambda block: block.i)
+
+    @property
+    def topmost(self) -> Block:
+        """Returns the topmost index in the current rotation"""
+        return min(self.blocks, key=lambda block: block.j)
+
+    @property
+    def bottommost(self) -> Block:
+        """Returns the bottommost index in the current rotation"""
+        return max(self.blocks, key=lambda block: block.j)
 
     @property
     def rotation(self) -> list[tuple[int, int]]:
@@ -84,8 +94,12 @@ class Tetromino:
 
     @property
     def width(self) -> int:
-        return self.rightest.i - self.leftest.i
+        return abs(self.x - self.rightmost.i)
 
     @property
     def height(self) -> int:
-        return self.rightest.j - self.leftest.j
+        return abs(self.y - self.bottommost.j)
+
+    @property
+    def name(self) -> str:
+        return self.__name
