@@ -45,7 +45,7 @@ class Images(metaclass=AssetsType):
         'L': Loader.load_image(f'{base_path}/Blue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'J': Loader.load_image(f'{base_path}/Orange.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'ghost': Loader.load_image(f'{base_path}/Ghost.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
-        'grid': Loader.load_image(f'{base_path}/Grid.png',
+        'border': Loader.load_image(f'{base_path}/Border.png',
                                   (Consts.GRID_WIDTH + 2) * Consts.BLOCK_SIZE,
                                   (Consts.GRID_HEIGHT + 2) * Consts.BLOCK_SIZE),
     }

@@ -13,8 +13,8 @@ class View:
         self.__fps = 60
         self.__fps_clock = pg.time.Clock()
 
-    def draw_grid(self, x: int, y: int):
-        self.__window.blit(Images.grid, (x, y, 0, 0))
+    def draw_board_border(self, x: int, y: int):
+        self.__window.blit(Images.border, (x, y, 0, 0))
 
     def draw_current_tetromino(self, x: int, y: int, block_size: int):
         current_tetromino = self.__model.cur_tetromino
@@ -43,7 +43,7 @@ class View:
         x = (self.__w - Consts.GRID_WIDTH * block_size) / 2
         y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) / 2
 
-        self.draw_grid(x - block_size, y - block_size)
+        self.draw_board_border(x - block_size, y - block_size)
 
         self.draw_current_tetromino(x, y, block_size)
 
