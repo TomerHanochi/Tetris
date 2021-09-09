@@ -17,5 +17,8 @@ class TetrominoSet:
         shuffle(new_set)
         self.__set.extend(new_set)
 
+    def get_next(self) -> list[Tetromino]:
+        return self.__set[:Consts.NEXT_SET_SIZE]
+
     def __len__(self) -> int:
         return len(self.__set)

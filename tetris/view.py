@@ -12,44 +12,70 @@ class View:
         self.dt = 0
         self.__fps = 60
         self.__fps_clock = pg.time.Clock()
+        self.block_size = Consts.BLOCK_SIZE
+
+    def draw_block(self, x: int, y: int, block) -> None:
+        rect = (x + block.i * self.block_size, y + block.j * self.block_size, 0, 0)
+
+        image = getattr(Images, block.parent)
+        self.__window.blit(image, rect)
+
+    def draw_border(self, x: int, y: int, width: int, height: int) -> None:
+        image = getattr(Images, 'border')
+        for i in range(width):
+            pos_x, pos_y = x + i * self.block_size, y
+            self.__window.blit(image, (pos_x, pos_y, 0, 0))
+            self.__window.blit(image, (pos_x, pos_y + (height + 1) * self.block_size, 0, 0))
+        for j in range(height):
+            pos_x, pos_y = x, y + (j + 1) * self.block_size
+            self.__window.blit(image, (pos_x, pos_y, 0, 0))
+            self.__window.blit(image, (pos_x + (width - 1) * self.block_size, pos_y, 0, 0))
+
+    def draw_tetromino(self, x, y, tetromino) -> None:
+        for block in tetromino.blocks:
+            if block.in_board:
+                self.draw_block(x, y, block)
 
     def draw_board_border(self, x: int, y: int):
-        self.__window.blit(Images.border, (x, y, 0, 0))
+        width, height = Consts.GRID_WIDTH + 2, Consts.GRID_HEIGHT
+        self.draw_border(x, y, width, height)
 
-    def draw_current_tetromino(self, x: int, y: int, block_size: int):
-        current_tetromino = self.__model.cur_tetromino
-        for block in current_tetromino.blocks:
-            if block.in_board:
-                rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
-                image = getattr(Images, block.parent)
-                self.__window.blit(image, rect)
+    def draw_next(self) -> None:
+        x = self.block_size
+        y = (self.__h - Consts.GRID_HEIGHT * self.block_size) / 2 + 3 * self.block_size
+        width, height = 8, Consts.NEXT_SET_SIZE * 3 + 1
+        self.draw_border(x, y, width, height)
 
-    def draw_ghost_tetromino(self, x: int, y: int, block_size: int) -> None:
-        ghost_tetromino = self.__model.ghost_tetromino
-        for block in ghost_tetromino.blocks:
-            rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
-            image = getattr(Images, block.parent)
-            self.__window.blit(image, rect)
+        for j, tetromino in enumerate(self.__model.next):
+            print(j)
+            pos_x = x + (width - tetromino.width - 1) * self.block_size / 2
+            pos_y = y + (j * 3 + 6) * self.block_size
+            for block in tetromino.blocks:
+                self.draw_block(pos_x, pos_y, block)
 
-    def draw_existing_blocks(self, x: int, y: int, block_size: int):
+    def draw_current_tetromino(self, x: int, y: int):
+        self.draw_tetromino(x, y, self.__model.cur_tetromino)
+
+    def draw_ghost_tetromino(self, x: int, y: int) -> None:
+        self.draw_tetromino(x, y, self.__model.ghost_tetromino)
+
+    def draw_existing_blocks(self, x: int, y: int):
         for block in self.__model.blocks:
             if block.in_board:
-                rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
-                image = getattr(Images, block.parent)
-                self.__window.blit(image, rect)
+                self.draw_block(x, y, block)
 
     def draw_board(self) -> None:
         block_size = Consts.BLOCK_SIZE
-        x = (self.__w - Consts.GRID_WIDTH * block_size) / 2
+        x = (self.__w - (Consts.GRID_WIDTH - 1) * block_size) / 2
         y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) / 2
 
         self.draw_board_border(x - block_size, y - block_size)
 
-        self.draw_current_tetromino(x, y, block_size)
+        self.draw_current_tetromino(x, y)
 
-        self.draw_ghost_tetromino(x, y, block_size)
+        self.draw_ghost_tetromino(x, y)
 
-        self.draw_existing_blocks(x, y, block_size)
+        self.draw_existing_blocks(x, y)
 
     def update(self) -> None:
         self.__model.update(self.dt)
@@ -57,6 +83,7 @@ class View:
         self.__window.fill(Colors.background_color)
 
         self.draw_board()
+        self.draw_next()
 
         pg.display.flip()
 

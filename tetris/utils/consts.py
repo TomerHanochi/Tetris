@@ -1,5 +1,5 @@
 class Consts:
-    SCREEN_SIZE = 1000, 1000
+    SCREEN_SIZE = 1200, 1000
     BLOCK_SIZE = 40
     GRID_WIDTH = 10
     GRID_HEIGHT = 20

@@ -82,6 +82,10 @@ class Model:
         return any(block.j <= 0 for block in self.blocks)
 
     @property
+    def next(self) -> list[Tetromino]:
+        return self.__tetromino_set.get_next()
+
+    @property
     def cur_tetromino(self) -> Tetromino:
         return self.__cur_tetromino
 

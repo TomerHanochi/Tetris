@@ -81,3 +81,11 @@ class Tetromino:
     @property
     def y(self) -> int:
         return int(self.__y)
+
+    @property
+    def width(self) -> int:
+        return self.rightest.i - self.leftest.i
+
+    @property
+    def height(self) -> int:
+        return self.rightest.j - self.leftest.j
