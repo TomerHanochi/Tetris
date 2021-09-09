@@ -13,41 +13,44 @@ class View:
         self.__fps = 60
         self.__fps_clock = pg.time.Clock()
 
-    def draw_grid(self) -> None:
+    def draw_grid(self, x: int, y: int):
+        self.__window.blit(Images.grid, (x, y, 0, 0))
+
+    def draw_current_tetromino(self, x: int, y: int, block_size: int):
+        current_tetromino = self.__model.cur_tetromino
+        for block in current_tetromino.blocks:
+            if block.in_board:
+                rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
+                image = getattr(Images, block.parent)
+                self.__window.blit(image, rect)
+
+    def draw_hint_tetromino(self, x: int, y: int, block_size: int) -> None:
+        pass
+
+    def draw_existing_blocks(self, x: int, y: int, block_size: int):
+        for block in self.__model.blocks:
+            if block.in_board:
+                rect = (x + block.i * block_size, y + block.j * block_size, 0, 0)
+                image = getattr(Images, block.parent)
+                self.__window.blit(image, rect)
+
+    def draw_board(self) -> None:
         block_size = Consts.BLOCK_SIZE
         x = (self.__w - Consts.GRID_WIDTH * block_size) / 2
         y = (self.__h - Consts.GRID_HEIGHT * block_size) / 2
 
-        # draws the grid
-        for i in range(Consts.GRID_WIDTH):
-            for j in range(Consts.GRID_HEIGHT):
-                rect = (x + i * block_size, y + j * block_size, block_size, block_size)
-                pg.draw.rect(self.__window, Colors.grid_color, rect, 1)
+        self.draw_grid(x - block_size, y - block_size)
 
-        # draws current tetromino
-        current_tetromino = self.__model.cur_tetromino
-        for block in current_tetromino.blocks:
-            if block.in_board:
-                rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
-                image = getattr(Images, block.parent)
-                self.__window.blit(image, rect)
+        self.draw_current_tetromino(x, y, block_size)
 
-        # TODO draw tetromino hint highlight
-        # draws the current tetromino location hint
-
-        # draws all existing blocks in the grid
-        for block in self.__model.blocks:
-            if block.in_board:
-                rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
-                image = getattr(Images, block.parent)
-                self.__window.blit(image, rect)
+        self.draw_existing_blocks(x, y, block_size)
 
     def update(self) -> None:
         self.__model.update(self.dt)
 
         self.__window.fill(Colors.background_color)
 
-        self.draw_grid()
+        self.draw_board()
 
         pg.display.flip()
 

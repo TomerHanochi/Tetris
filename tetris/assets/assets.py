@@ -36,7 +36,6 @@ class Colors(metaclass=AssetsType):
 
 class Images(metaclass=AssetsType):
     base_path = abspath('tetris/assets/images')
-
     assets = {
         'O': Loader.load_image(f'{base_path}/Yellow.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'I': Loader.load_image(f'{base_path}/LightBlue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
@@ -45,4 +44,7 @@ class Images(metaclass=AssetsType):
         'Z': Loader.load_image(f'{base_path}/Red.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'L': Loader.load_image(f'{base_path}/Blue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'J': Loader.load_image(f'{base_path}/Orange.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'grid': Loader.load_image(f'{base_path}/Grid.png',
+                                  (Consts.GRID_WIDTH + 2) * Consts.BLOCK_SIZE,
+                                  (Consts.GRID_HEIGHT + 2) * Consts.BLOCK_SIZE)
     }
