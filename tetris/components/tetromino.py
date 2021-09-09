@@ -1,62 +1,16 @@
 from tetris.components.block import Block
-from tetris.assets.assets import Colors
 from tetris.utils.consts import Consts
-
-ROTATIONS = {
-    # The rotations are taken from the fan made,
-    # but still trustworthy, TetrisWiki - https://tetris.fandom.com/wiki/SRS
-    'O': [
-        [(0, 0), (1, 0), (0, 1), (1, 1)],
-    ],
-    'I': [
-        [(0, 1), (1, 1), (2, 1), (3, 1)],
-        [(1, 0), (1, 1), (1, 2), (1, 3)],
-        [(0, 2), (1, 2), (2, 2), (3, 2)],
-        [(2, 0), (2, 1), (2, 2), (2, 3)],
-    ],
-    'T': [
-        [(1, 0), (0, 1), (1, 1), (2, 1)],
-        [(1, 0), (1, 1), (2, 1), (1, 2)],
-        [(0, 1), (1, 1), (2, 1), (1, 2)],
-        [(1, 0), (1, 1), (1, 2), (0, 1)],
-    ],
-    'S': [
-        [(1, 0), (2, 0), (0, 1), (1, 1)],
-        [(1, 0), (1, 1), (2, 1), (2, 2)],
-        [(1, 1), (2, 1), (0, 2), (1, 2)],
-        [(0, 0), (0, 1), (1, 1), (1, 2)],
-    ],
-    'Z': [
-        [(0, 0), (1, 0), (1, 1), (2, 1)],
-        [(2, 0), (1, 1), (2, 1), (1, 2)],
-        [(0, 1), (1, 1), (1, 2), (2, 2)],
-        [(1, 0), (1, 1), (0, 1), (0, 2)],
-    ],
-    'L': [
-        [(0, 1), (1, 1), (2, 1), (0, 0)],
-        [(1, 0), (1, 1), (1, 2), (2, 0)],
-        [(0, 1), (1, 1), (2, 1), (2, 2)],
-        [(1, 0), (1, 1), (1, 2), (0, 2)],
-    ],
-    'J': [
-        [(0, 1), (1, 1), (2, 1), (2, 0)],
-        [(1, 0), (1, 1), (1, 2), (2, 2)],
-        [(0, 1), (1, 1), (2, 1), (0, 2)],
-        [(1, 0), (1, 1), (1, 2), (0, 0)],
-    ],
-}
 
 
 class Tetromino:
     def __init__(self, name: str) -> None:
-        self.__color = getattr(Colors, name)
-        self.__rotations = ROTATIONS[name]
+        self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         # TODO change starting location of tetrominoes
         self.__x = 0
         self.__y = -4
         self.blocks = [
-            Block(self.__x + i, self.__y + j, self.__color) for (i, j) in self.rotation
+            Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
         ]
 
     def rotate_right(self) -> None:

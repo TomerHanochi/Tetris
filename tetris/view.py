@@ -1,7 +1,7 @@
 import pygame as pg
 
 from tetris.utils.consts import Consts
-from tetris.assets.assets import Colors
+from tetris.assets.assets import Colors, Images
 
 
 class View:
@@ -29,7 +29,8 @@ class View:
         for block in current_tetromino.blocks:
             if block.in_board:
                 rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
-                self.__window.fill(block.color, rect)
+                image = getattr(Images, block.parent)
+                self.__window.blit(image, rect)
 
         # TODO draw tetromino hint highlight
         # draws the current tetromino location hint
@@ -38,7 +39,8 @@ class View:
         for block in self.__model.blocks:
             if block.in_board:
                 rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
-                self.__window.fill(block.color, rect)
+                image = getattr(Images, block.parent)
+                self.__window.blit(image, rect)
 
     def update(self) -> None:
         self.__model.update(self.dt)

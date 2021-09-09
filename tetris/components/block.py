@@ -2,9 +2,9 @@ from tetris.utils.consts import Consts
 
 
 class Block:
-    def __init__(self, i: float, j: float, color: tuple[int, int, int]) -> None:
+    def __init__(self, parent: str, i: float, j: float) -> None:
+        self.parent = parent
         self.__i, self.__j = i, j
-        self.__color = color
 
     @property
     def can_move_right(self) -> bool:
@@ -39,10 +39,6 @@ class Block:
     @property
     def in_board(self) -> bool:
         return 0 <= self.__j
-
-    @property
-    def color(self) -> tuple[int, int, int]:
-        return self.__color
 
     @property
     def i(self) -> int:

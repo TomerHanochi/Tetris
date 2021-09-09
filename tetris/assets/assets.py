@@ -1,9 +1,23 @@
+from os.path import abspath
+import pygame as pg
+
+from tetris.utils.consts import Consts
+
+
 class AssetsType(type):
     def __getattr__(cls, item: str) -> tuple[int, int, int] or pg.font.Font:
         try:
             return cls.assets[item]
         except KeyError:
             raise KeyError(f'{item} doesn\'t exist in {cls.__name__}')
+
+
+class Loader:
+    @staticmethod
+    def load_image(path: str, width: int, height: int):
+        return pg.transform.smoothscale(
+            pg.image.load(path), (width, height)
+        )
 
 
 class Colors(metaclass=AssetsType):
@@ -17,4 +31,18 @@ class Colors(metaclass=AssetsType):
         'Z': (255, 0, 0),
         'L': (0, 0, 255),
         'J': (255, 128, 0),
+    }
+
+
+class Images(metaclass=AssetsType):
+    base_path = abspath('tetris/assets/images')
+
+    assets = {
+        'O': Loader.load_image(f'{base_path}/Yellow.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'I': Loader.load_image(f'{base_path}/LightBlue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'T': Loader.load_image(f'{base_path}/Purple.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'S': Loader.load_image(f'{base_path}/Green.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'Z': Loader.load_image(f'{base_path}/Red.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'L': Loader.load_image(f'{base_path}/Blue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'J': Loader.load_image(f'{base_path}/Orange.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
     }
