@@ -5,10 +5,13 @@ from tetris.assets.assets import Colors
 
 
 class View:
-    def __init__(self, controller) -> None:
+    def __init__(self, model) -> None:
         self.__w, self.__h = Consts.SCREEN_SIZE
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
-        self.__controller = controller
+        self.__model = model
+        self.dt = 0
+        self.__fps = 60
+        self.__fps_clock = pg.time.Clock()
 
     def draw_grid(self) -> None:
         block_size = Consts.BLOCK_SIZE
@@ -38,12 +41,12 @@ class View:
                 self.__window.fill(block.color, rect)
 
     def update(self) -> None:
+        self.__model.update(self.dt)
+
         self.__window.fill(Colors.background_color)
 
         self.draw_grid()
 
         pg.display.flip()
 
-    @property
-    def __model(self):
-        return self.__controller.model
+        self.dt = self.__fps_clock.tick(self.__fps)

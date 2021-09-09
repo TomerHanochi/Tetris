@@ -8,10 +8,7 @@ from tetris.view import View
 class Controller:
     def __init__(self) -> None:
         self.__model = Model()
-        self.__view = View(self)
-        self.dt = 0
-        self.__fps = 10
-        self.__fps_clock = pg.time.Clock()
+        self.__view = View(self.__model)
 
     def handle(self, event) -> None:
         if event.type == pg.QUIT:
@@ -38,13 +35,7 @@ class Controller:
             for event in pg.event.get():
                 self.handle(event)
 
-            self.__model.update(self.dt)
-
             self.__view.update()
-
-            # Makes sure the game runs at a stable fps
-            # on every computer
-            self.dt = self.__fps_clock.tick(self.__fps)
 
     @property
     def model(self) -> Model:

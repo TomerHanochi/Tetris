@@ -10,7 +10,7 @@ class Model:
         self.__cur = self.__tetromino_set.remove()
         self.__blocks = []
 
-    def update(self, dt) -> None:
+    def update(self, dt: int) -> None:
         if self.terminal:
             pass
         else:
@@ -46,8 +46,8 @@ class Model:
 
     def clear_rows(self) -> None:
         indecies = [block.j for block in self.blocks]
-        indecies = set(filter(lambda j: indecies.count(j) == Consts.GRID_WIDTH, indecies))
-        clearable = set(filter(lambda block: block.j in indecies, self.blocks))
+        indecies = {index for index in indecies if indecies.count(index) == Consts.GRID_WIDTH}
+        clearable = {block for block in self.blocks if block.j in indecies}
         for block in clearable:
             self.blocks.remove(block)
             del block
@@ -57,7 +57,7 @@ class Model:
             rows = sorted({block.j for block in self.blocks if block.j < lowest_row_index},
                           reverse=True)
             floating = [
-                list(filter(lambda block: block.j == row, self.blocks)) for row in rows
+                [block for block in self.blocks if block.j == row] for row in rows
             ]
             for row in floating:
                 quit_loop = False
