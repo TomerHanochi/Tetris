@@ -47,7 +47,6 @@ class View:
         self.draw_border(x, y, width, height)
 
         for j, tetromino in enumerate(self.__model.next):
-            print(j)
             pos_x = x + (width - tetromino.width - 1) * self.block_size / 2
             pos_y = y + (j * 3 + 6) * self.block_size
             for block in tetromino.blocks:
