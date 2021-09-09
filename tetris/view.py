@@ -12,8 +12,8 @@ class View:
 
     def draw_grid(self) -> None:
         block_size = Consts.BLOCK_SIZE
-        x = (self.w - Consts.GRID_WIDTH * block_size) / 2
-        y = (self.h - Consts.GRID_HEIGHT * block_size) / 2
+        x = (self.__w - Consts.GRID_WIDTH * block_size) / 2
+        y = (self.__h - Consts.GRID_HEIGHT * block_size) / 2
 
         # draws the grid
         for i in range(Consts.GRID_WIDTH):
@@ -22,14 +22,17 @@ class View:
                 pg.draw.rect(self.__window, Colors.grid_color, rect, 1)
 
         # draws current tetromino
-        current_tetromino = self.__controller.model.cur_tetromino
+        current_tetromino = self.__model.cur_tetromino
         for block in current_tetromino.blocks:
             if block.in_board:
                 rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
                 self.__window.fill(block.color, rect)
 
+        # TODO draw tetromino hint highlight
+        # draws the current tetromino location hint
+
         # draws all existing blocks in the grid
-        for block in self.__controller.model.blocks:
+        for block in self.__model.blocks:
             if block.in_board:
                 rect = (x + block.i * block_size, y + block.j * block_size, block_size, block_size)
                 self.__window.fill(block.color, rect)
@@ -42,9 +45,5 @@ class View:
         pg.display.flip()
 
     @property
-    def w(self) -> int:
-        return self.__w
-
-    @property
-    def h(self) -> int:
-        return self.__h
+    def __model(self):
+        return self.__controller.model

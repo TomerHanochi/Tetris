@@ -29,7 +29,7 @@ class Controller:
             elif event.key == pg.K_DOWN:
                 pass
             elif event.key == pg.K_SPACE:
-                pass
+                self.__model.drop_tetromino()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
                 pass
 

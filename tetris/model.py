@@ -19,6 +19,8 @@ class Model:
             else:
                 self.__blocks.extend(self.cur_tetromino.blocks)
 
+                self.clear_rows()
+
                 if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
                     self.__tetromino_set.generate_new_tetrominoes()
 
@@ -37,6 +39,41 @@ class Model:
 
     def rotate_tetromino_left(self) -> None:
         self.cur_tetromino.rotate_left()
+
+    def drop_tetromino(self) -> None:
+        while self.cur_tetromino.can_move_down(self.blocks):
+            self.cur_tetromino.move_down(1)
+
+    def clear_rows(self) -> None:
+        indecies = [block.j for block in self.blocks]
+        indecies = set(filter(lambda j: indecies.count(j) == Consts.GRID_WIDTH, indecies))
+        clearable = set(filter(lambda block: block.j in indecies, self.blocks))
+        for block in clearable:
+            self.blocks.remove(block)
+            del block
+
+        if indecies:
+            lowest_row_index = max(indecies)
+            rows = sorted({block.j for block in self.blocks if block.j < lowest_row_index},
+                          reverse=True)
+            floating = [
+                list(filter(lambda block: block.j == row, self.blocks)) for row in rows
+            ]
+            for row in floating:
+                quit_loop = False
+                while not quit_loop:
+                    for block in row:
+                        for other in self.blocks:
+                            if other is not block and block.collide_down(other):
+                                quit_loop = True
+                                break
+                        if not block.can_move_down:
+                            quit_loop = True
+                        if quit_loop:
+                            break
+                    if not quit_loop:
+                        for block in row:
+                            block.move_down(1)
 
     @property
     def terminal(self) -> bool:

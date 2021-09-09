@@ -65,7 +65,7 @@ class Tetromino:
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftest < 0 or self.rightest >= Consts.GRID_WIDTH:
+        if self.leftest.i < 0 or self.rightest.i >= Consts.GRID_WIDTH:
             self.rotate_left()
 
     def rotate_left(self) -> None:
@@ -74,11 +74,11 @@ class Tetromino:
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftest < 0 or self.rightest >= Consts.GRID_WIDTH:
+        if self.leftest.i < 0 or self.rightest.i >= Consts.GRID_WIDTH:
             self.rotate_right()
 
     def can_move_right(self, blocks) -> bool:
-        return (self.rightest < Consts.GRID_WIDTH - 1 and
+        return (self.rightest.can_move_right and
                 all(not block.collide_right(other) for other in blocks for block in self.blocks))
 
     def move_right(self) -> None:
@@ -87,7 +87,7 @@ class Tetromino:
             block.move_right()
 
     def can_move_left(self, blocks) -> bool:
-        return (self.leftest > 0 and
+        return (self.leftest.can_move_left and
                 all(not block.collide_left(other) for other in blocks for block in self.blocks))
 
     def move_left(self) -> None:
@@ -96,7 +96,7 @@ class Tetromino:
             block.move_left()
 
     def can_move_down(self, blocks) -> bool:
-        return (all(block.j < Consts.GRID_HEIGHT - 1 for block in self.blocks) and
+        return (all(block.can_move_down for block in self.blocks) and
                 all(not block.collide_down(other) for other in blocks for block in self.blocks))
 
     def move_down(self, speed) -> None:
@@ -105,17 +105,16 @@ class Tetromino:
             block.move_down(speed)
 
     @property
-    def rightest(self) -> int:
+    def rightest(self) -> Block:
         """Returns the rightest index in the current rotation"""
-        return max(self.blocks, key=lambda block: block.i).i
+        return max(self.blocks, key=lambda block: block.i)
 
     @property
-    def leftest(self) -> int:
+    def leftest(self) -> Block:
         """Returns the leftest index in the current rotation"""
-        return min(self.blocks, key=lambda block: block.i).i
+        return min(self.blocks, key=lambda block: block.i)
 
     @property
     def rotation(self) -> list[tuple[int, int]]:
         """Returns the current rotation"""
         return self.__rotations[self.__rotation]
-

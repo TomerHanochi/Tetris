@@ -1,6 +1,3 @@
-import pygame as pg
-
-
 class AssetsType(type):
     def __getattr__(cls, item: str) -> tuple[int, int, int] or pg.font.Font:
         try:
@@ -20,13 +17,4 @@ class Colors(metaclass=AssetsType):
         'Z': (255, 0, 0),
         'L': (0, 0, 255),
         'J': (255, 128, 0),
-    }
-
-
-class Fonts(metaclass=AssetsType):
-    if not pg.font.get_init():
-        pg.font.init()
-
-    assets = {
-
     }

@@ -1,13 +1,28 @@
+from tetris.utils.consts import Consts
+
+
 class Block:
     def __init__(self, i: float, j: float, color: tuple[int, int, int]) -> None:
         self.__i, self.__j = i, j
         self.__color = color
 
+    @property
+    def can_move_right(self) -> bool:
+        return self.__i < Consts.GRID_WIDTH - 1
+
     def move_right(self) -> None:
         self.__i += 1
 
+    @property
+    def can_move_left(self) -> bool:
+        return self.__i > 0
+
     def move_left(self) -> None:
         self.__i -= 1
+
+    @property
+    def can_move_down(self) -> bool:
+        return self.__j < Consts.GRID_HEIGHT - 1
 
     def move_down(self, speed) -> None:
         self.__j += speed
