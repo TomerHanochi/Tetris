@@ -47,8 +47,9 @@ class View:
         self.draw_border(x, y, width, height)
 
         for j, tetromino in enumerate(self.__model.next):
-            pos_x = x + (width - tetromino.width - 1) * self.block_size * .5
-            pos_y = y + (j * 3 + 6) * self.block_size
+            pos_x = x + (width - tetromino.width - 1) * self.block_size * .5 - \
+                    tetromino.x * self.block_size
+            pos_y = y + (j * 3 + 4) * self.block_size
             for block in tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
@@ -58,10 +59,10 @@ class View:
         y = (self.__h - Consts.GRID_HEIGHT * self.block_size) * .5 + 3 * self.block_size
         self.draw_border(x, y, width, height)
 
-        if self.__model.held_tetromino is not None:
-            pos_x = x + (width - self.__model.held_tetromino.width - 1) * self.block_size * .5
-            pos_y = y + (height - self.__model.held_tetromino.height + 1) * self.block_size * .5 + \
-                4 * self.block_size
+        held = self.__model.held_tetromino
+        if held is not None:
+            pos_x = x + (width - held.width - 1) * self.block_size * .5 - held.x * self.block_size
+            pos_y = y + (height - held.height + 1) * self.block_size * .5 + 2 * self.block_size
             for block in self.__model.held_tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 

@@ -1,3 +1,5 @@
+from random import randint
+
 from tetris.components.block import Block
 from tetris.utils.consts import Consts
 
@@ -7,9 +9,9 @@ class Tetromino:
         self.__name = name
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
-        # TODO change starting location of tetrominoes
-        self.__x = 0
-        self.__y = -4
+        a, b = Consts.STARTING_POSITIONS[name]
+        self.__x = randint(a, b)
+        self.__y = -2
         self.blocks = [
             Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
         ]
