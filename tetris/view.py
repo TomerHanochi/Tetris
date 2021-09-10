@@ -10,7 +10,7 @@ class View:
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
         self.__model = model
         self.dt = 0
-        self.__fps = 60
+        self.__fps = Consts.FRAME_RATE
         self.__fps_clock = pg.time.Clock()
         self.block_size = Consts.BLOCK_SIZE
 
@@ -83,11 +83,8 @@ class View:
         y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) * .5
 
         self.draw_board_border(x - block_size, y - block_size)
-
         self.draw_ghost_tetromino(x, y)
-
         self.draw_current_tetromino(x, y)
-
         self.draw_existing_blocks(x, y)
 
     def update(self) -> None:
