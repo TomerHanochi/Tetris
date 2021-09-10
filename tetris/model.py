@@ -50,7 +50,6 @@ class Model:
             self.cur_tetromino.move_down(1)
 
     def clear_rows(self) -> None:
-        # TODO beautify this
         indecies = [block.j for block in self.blocks]
         indecies = {index for index in indecies if indecies.count(index) == Consts.GRID_WIDTH}
         clearable = {block for block in self.blocks if block.j in indecies}
@@ -66,20 +65,10 @@ class Model:
                 [block for block in self.blocks if block.j == row] for row in rows
             ]
             for row in floating:
-                quit_loop = False
-                while not quit_loop:
+                while all(not block.collide_down(other) for block in row for other in self.blocks
+                          if other is not block) and all(block.can_move_down for block in row):
                     for block in row:
-                        for other in self.blocks:
-                            if other is not block and block.collide_down(other):
-                                quit_loop = True
-                                break
-                        if not block.can_move_down:
-                            quit_loop = True
-                        if quit_loop:
-                            break
-                    if not quit_loop:
-                        for block in row:
-                            block.move_down(1)
+                        block.move_down(1)
 
     def hold(self) -> None:
         if self.__can_be_held:
