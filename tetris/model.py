@@ -31,21 +31,21 @@ class Model:
                 self.__cur_tetromino = self.__tetromino_set.remove()
                 self.__can_be_held = True
 
-    def move_tetromino_right(self) -> None:
+    def move_right(self) -> None:
         if self.cur_tetromino.can_move_right(self.blocks):
             self.cur_tetromino.move_right()
 
-    def move_tetromino_left(self) -> None:
+    def move_left(self) -> None:
         if self.cur_tetromino.can_move_left(self.blocks):
             self.cur_tetromino.move_left()
 
-    def rotate_tetromino_right(self) -> None:
+    def rotate_right(self) -> None:
         self.cur_tetromino.rotate_right()
 
-    def rotate_tetromino_left(self) -> None:
+    def rotate_left(self) -> None:
         self.cur_tetromino.rotate_left()
 
-    def drop_tetromino(self) -> None:
+    def hard_drop(self) -> None:
         while self.cur_tetromino.can_move_down(self.blocks):
             self.cur_tetromino.move_down(1)
 

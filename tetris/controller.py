@@ -16,18 +16,18 @@ class Controller:
             sys.exit()
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
-                self.__model.move_tetromino_right()
+                self.__model.move_right()
             elif event.key == pg.K_LEFT:
-                self.__model.move_tetromino_left()
+                self.__model.move_left()
             elif event.key == pg.K_UP or event.key == pg.K_x:
-                self.__model.rotate_tetromino_right()
+                self.__model.rotate_right()
             elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
-                self.__model.rotate_tetromino_left()
+                self.__model.rotate_left()
             elif event.key == pg.K_DOWN:
                 # TODO soft drop
                 pass
             elif event.key == pg.K_SPACE:
-                self.__model.drop_tetromino()
+                self.__model.hard_drop()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
                 self.__model.hold()
         elif event.type == pg.KEYUP:
