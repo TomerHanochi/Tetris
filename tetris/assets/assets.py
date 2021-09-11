@@ -14,16 +14,15 @@ class AssetsType(type):
 
 class Loader:
     @staticmethod
-    def load_image(path: str, width: int, height: int):
+    def load_image(path: str, width: int or float, height: int or float):
         return pg.transform.smoothscale(
-            pg.image.load(path), (width, height)
+            pg.image.load(path), (int(width), int(height))
         )
 
 
 class Colors(metaclass=AssetsType):
     assets = {
         'background_color': (0, 0, 0),
-        'grid_color': (150, 150, 150),
         'O': (255, 255, 0),
         'I': (0, 255, 255),
         'T': (128, 0, 128),
@@ -46,4 +45,6 @@ class Images(metaclass=AssetsType):
         'J': Loader.load_image(f'{base_path}/Orange.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'ghost': Loader.load_image(f'{base_path}/Ghost.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'border': Loader.load_image(f'{base_path}/Border.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'title': Loader.load_image(f'{base_path}/Title.png', Consts.BLOCK_SIZE * Consts.GRID_WIDTH,
+                                   Consts.BLOCK_SIZE * Consts.GRID_WIDTH * .25),
     }

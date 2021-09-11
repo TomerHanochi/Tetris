@@ -13,6 +13,12 @@ class View:
         self.__fps_clock = pg.time.Clock()
         self.block_size = Consts.BLOCK_SIZE
 
+    def draw_title(self) -> None:
+        block_size = Consts.BLOCK_SIZE
+        x = (self.__w - Consts.GRID_WIDTH * block_size) * .5
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) * .5 - block_size * 3.5
+        self.__window.blit(Images.title, (x, y, 0, 0))
+
     def draw_block(self, x: int, y: int, block) -> None:
         rect = (x + block.i * self.block_size, y + block.j * self.block_size, 0, 0)
 
@@ -91,6 +97,7 @@ class View:
 
         self.__window.fill(Colors.background_color)
 
+        self.draw_title()
         self.draw_board()
         self.draw_next()
         self.draw_held()
