@@ -56,10 +56,10 @@ class Tetromino:
         return (all(block.can_move_down for block in self.blocks) and
                 all(not block.collide_down(other) for other in blocks for block in self.blocks))
 
-    def move_down(self, speed) -> None:
-        self.__y += speed
+    def move_down(self) -> None:
+        self.__y += 1
         for block in self.blocks:
-            block.move_down(speed)
+            block.move_down()
 
     @property
     def rightmost(self) -> Block:
@@ -88,11 +88,11 @@ class Tetromino:
 
     @property
     def x(self) -> int:
-        return int(self.__x)
+        return self.__x
 
     @property
     def y(self) -> int:
-        return int(self.__y)
+        return self.__y
 
     @property
     def width(self) -> int:

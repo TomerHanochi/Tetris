@@ -9,7 +9,7 @@ class GhostTetromino:
         ]
         while self.can_move_down(blocks):
             for block in self.blocks:
-                block.move_down(1)
+                block.move_down()
 
     def can_move_down(self, blocks) -> bool:
         return (all(block.can_move_down for block in self.blocks) and
@@ -22,4 +22,4 @@ class GhostTetromino:
 
         while self.can_move_down(blocks):
             for block in self.blocks:
-                block.move_down(1)
+                block.move_down()

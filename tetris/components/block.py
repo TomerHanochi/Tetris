@@ -2,7 +2,7 @@ from tetris.utils.consts import Consts
 
 
 class Block:
-    def __init__(self, parent: str, i: float, j: float) -> None:
+    def __init__(self, parent: str, i: int, j: int) -> None:
         self.parent = parent
         self.__i, self.__j = i, j
 
@@ -24,8 +24,8 @@ class Block:
     def can_move_down(self) -> bool:
         return self.__j < Consts.GRID_HEIGHT - 1
 
-    def move_down(self, speed) -> None:
-        self.__j += speed
+    def move_down(self) -> None:
+        self.__j += 1
 
     def collide_down(self, other) -> bool:
         return self.i == other.i and self.j + 1 == other.j
@@ -42,7 +42,7 @@ class Block:
 
     @property
     def i(self) -> int:
-        return int(self.__i)
+        return self.__i
 
     @i.setter
     def i(self, value: float or int) -> None:
@@ -50,7 +50,7 @@ class Block:
 
     @property
     def j(self) -> int:
-        return int(self.__j)
+        return self.__j
 
     @j.setter
     def j(self, value: float or int) -> None:

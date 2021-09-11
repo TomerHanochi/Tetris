@@ -16,28 +16,26 @@ class Controller:
             sys.exit()
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_RIGHT:
-                self.__model.move_right()
+                self.__model.start_move_right()
             elif event.key == pg.K_LEFT:
-                self.__model.move_left()
+                self.__model.start_move_left()
             elif event.key == pg.K_UP or event.key == pg.K_x:
                 self.__model.rotate_right()
             elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
                 self.__model.rotate_left()
             elif event.key == pg.K_DOWN:
-                # TODO soft drop
-                pass
+                self.__model.start_soft_drop()
             elif event.key == pg.K_SPACE:
                 self.__model.hard_drop()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
                 self.__model.hold()
         elif event.type == pg.KEYUP:
-            # TODO keyup
             if event.key == pg.K_RIGHT:
-                pass
+                self.__model.stop_move_right()
             elif event.key == pg.K_LEFT:
-                pass
+                self.__model.stop_move_left()
             elif event.key == pg.K_DOWN:
-                pass
+                self.__model.stop_soft_drop()
 
     def run(self) -> None:
         while True:
