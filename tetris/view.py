@@ -9,7 +9,7 @@ class View:
         self.__w, self.__h = Consts.SCREEN_SIZE
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
         self.__model = model
-        self.dt = 0
+        self.__dt = 0
         self.__fps = Consts.FRAME_RATE
         self.__fps_clock = pg.time.Clock()
         self.block_size = Consts.BLOCK_SIZE
@@ -88,7 +88,7 @@ class View:
         self.draw_existing_blocks(x, y)
 
     def update(self) -> None:
-        self.__model.update(self.dt)
+        self.__model.update(self.__dt)
 
         self.__window.fill(Colors.background_color)
 
@@ -98,4 +98,4 @@ class View:
 
         pg.display.flip()
 
-        self.dt = self.__fps_clock.tick(self.__fps)
+        self.__dt = self.__fps_clock.tick(self.__fps)
