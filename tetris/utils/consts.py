@@ -2,7 +2,9 @@ class Consts:
     SCREEN_SIZE = 1200, 1000
     FRAME_RATE = 60
     HORIZONTAL_COOLDOWN = 6
-    VERTICAL_COOLDOWN = 6
+    SOFT_DROP_COOLDOWN = int(FRAME_RATE / 20)
+    COOLDOWN_BY_LEVEL = (48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5,
+                         4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1)
     BLOCK_SIZE = 40
     GRID_WIDTH = 10
     GRID_HEIGHT = 20

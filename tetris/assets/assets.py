@@ -19,10 +19,17 @@ class Loader:
             pg.image.load(path), (int(width), int(height))
         )
 
+    @staticmethod
+    def load_font(path: str, size: int or float):
+        return pg.font.Font(path, size)
+
 
 class Colors(metaclass=AssetsType):
     assets = {
-        'background_color': (0, 0, 0),
+        'background': (0, 0, 0),
+        'title': (255, 255, 255),
+        'cub_title': (255, 255, 255),
+        'default_text': (255, 255, 255),
         'O': (255, 255, 0),
         'I': (0, 255, 255),
         'T': (128, 0, 128),
@@ -47,4 +54,12 @@ class Images(metaclass=AssetsType):
         'border': Loader.load_image(f'{base_path}/Border.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'title': Loader.load_image(f'{base_path}/Title.png', Consts.BLOCK_SIZE * Consts.GRID_WIDTH,
                                    Consts.BLOCK_SIZE * Consts.GRID_WIDTH * .25),
+    }
+
+
+class Fonts(metaclass=AssetsType):
+    base_path = abspath('tetris/assets/fonts')
+    assets = {
+        'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
+        'sub_title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
     }

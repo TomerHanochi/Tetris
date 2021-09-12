@@ -20,6 +20,8 @@ class Model:
         self.__move_down_cooldown = 0
         self.__should_soft_drop = False
         self.__soft_drop_cooldown = 0
+        self.__rows_cleared = 0
+        self.__score = 0
 
     def update(self) -> None:
         if self.__should_move_right and self.can_move_right:
@@ -88,7 +90,7 @@ class Model:
     def move_down(self) -> None:
         if self.__move_down_cooldown == 0:
             self.cur_tetromino.move_down()
-            self.__move_down_cooldown = Consts.VERTICAL_COOLDOWN * 3
+            self.__move_down_cooldown = Consts.COOLDOWN_BY_LEVEL[self.level]
 
     def rotate_right(self) -> None:
         self.cur_tetromino.rotate_right()
@@ -105,7 +107,7 @@ class Model:
 
     def soft_drop(self) -> None:
         self.cur_tetromino.move_down()
-        self.__soft_drop_cooldown = Consts.VERTICAL_COOLDOWN
+        self.__soft_drop_cooldown = Consts.SOFT_DROP_COOLDOWN
 
     def stop_soft_drop(self) -> None:
         self.__should_soft_drop = False
@@ -134,6 +136,8 @@ class Model:
                           if other is not block) and all(block.can_move_down for block in row):
                     for block in row:
                         block.move_down()
+
+        self.__rows_cleared += len(indecies)
 
     def hold(self) -> None:
         if self.__can_be_held:
@@ -170,3 +174,17 @@ class Model:
     @property
     def blocks(self) -> list[Block]:
         return self.__blocks
+
+    @property
+    def rows_cleared(self) -> int:
+        return self.__rows_cleared
+
+    @property
+    def level(self) -> int:
+        level = int(self.rows_cleared * .1)
+        return (0 if level < 0 else
+                level if level < 28 else 28)
+
+    @property
+    def score(self) -> int:
+        return self.__score
