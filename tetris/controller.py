@@ -1,4 +1,5 @@
 import sys
+
 import pygame as pg
 
 from tetris.model import Model
