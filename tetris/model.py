@@ -22,6 +22,7 @@ class Model:
         self.__soft_drop_cooldown = 0
         self.__rows_cleared = 0
         self.__score = 0
+        self.__cells_dropped = 0
 
     def update(self) -> None:
         if self.__should_move_right and self.can_move_right:
@@ -108,6 +109,7 @@ class Model:
     def soft_drop(self) -> None:
         self.cur_tetromino.move_down()
         self.__soft_drop_cooldown = Consts.SOFT_DROP_COOLDOWN
+        self.__score += Consts.SOFT_DROP_MULT
 
     def stop_soft_drop(self) -> None:
         self.__should_soft_drop = False
@@ -115,6 +117,7 @@ class Model:
     def hard_drop(self) -> None:
         while self.cur_tetromino.can_move_down(self.blocks):
             self.cur_tetromino.move_down()
+            self.__score += Consts.HARD_DROP_MULT
 
     def clear_rows(self) -> None:
         indecies = [block.j for block in self.blocks]
@@ -137,7 +140,10 @@ class Model:
                     for block in row:
                         block.move_down()
 
-        self.__rows_cleared += len(indecies)
+        cleared = len(indecies)
+        if cleared:
+            self.__rows_cleared += cleared
+            self.__score += Consts.ROW_CLEAR_MULT[cleared - 1] * (self.level + 1)
 
     def hold(self) -> None:
         if self.__can_be_held:

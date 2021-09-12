@@ -5,6 +5,9 @@ class Consts:
     SOFT_DROP_COOLDOWN = int(FRAME_RATE / 20)
     COOLDOWN_BY_LEVEL = (48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5,
                          4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1)
+    ROW_CLEAR_MULT = (40, 100, 300, 1200)
+    HARD_DROP_MULT = 2
+    SOFT_DROP_MULT = 1
     BLOCK_SIZE = 40
     GRID_WIDTH = 10
     GRID_HEIGHT = 20
