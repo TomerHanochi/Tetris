@@ -117,7 +117,7 @@ class View:
 
         sub_title = Fonts.sub_title.render(f'LEVEL', True, Colors.title,
                                            Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 1.25
+        sub_title_y = sub_title_y + sub_title.get_height() * 2
         self.__window.blit(sub_title, (x, sub_title_y))
 
         sub_title = Fonts.sub_title.render(f'{self.__model.level}', True, Colors.title,
@@ -127,7 +127,7 @@ class View:
 
         sub_title = Fonts.sub_title.render(f'CLEARED', True, Colors.title,
                                            Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 1.25
+        sub_title_y = sub_title_y + sub_title.get_height() * 2
         self.__window.blit(sub_title, (x, sub_title_y))
 
         sub_title = Fonts.sub_title.render(f'{self.__model.rows_cleared}', True, Colors.title,
