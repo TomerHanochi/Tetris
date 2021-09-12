@@ -4,6 +4,7 @@ from tetris.utils.consts import Consts
 from tetris.assets.assets import Colors, Images, Fonts
 from tetris.model import Model
 
+
 class View:
     def __init__(self, model: Model) -> None:
         self.__w, self.__h = Consts.SCREEN_SIZE
@@ -59,7 +60,7 @@ class View:
         for j, tetromino in enumerate(self.__model.next):
             pos_x = x + (width - tetromino.width - 1) * Consts.BLOCK_SIZE * .5 - \
                     tetromino.x * Consts.BLOCK_SIZE
-            pos_y = y + (j * (tetromino.height + 2) + 4) * Consts.BLOCK_SIZE
+            pos_y = y + (j * 3 + 4) * Consts.BLOCK_SIZE
             for block in tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
