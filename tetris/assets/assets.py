@@ -5,6 +5,10 @@ from tetris.utils.consts import Consts
 
 
 class AssetsType(type):
+    """
+    Metaclass used to retrieve data from the assets classes
+    this is so instead of writing Colors.assets['background'] you can just write Colors.background
+    """
     def __getattr__(cls, item: str) -> tuple[int, int, int] or pg.font.Font:
         try:
             return cls.assets[item]
@@ -13,6 +17,10 @@ class AssetsType(type):
 
 
 class Loader:
+    """
+    A basic loader class used to load fonts and images
+    Used so there is only one place that needs to be changed
+    """
     @staticmethod
     def load_image(path: str, width: int or float, height: int or float):
         return pg.transform.smoothscale(
@@ -25,11 +33,14 @@ class Loader:
 
 
 class Colors(metaclass=AssetsType):
+    """
+    An assets class that has all the colors
+    """
     assets = {
         'background': (0, 0, 0),
         'title': (255, 255, 255),
-        'cub_title': (255, 255, 255),
-        'default_text': (255, 255, 255),
+        'sub_title': (255, 255, 255),
+        'statistic': (255, 255, 255),
         'O': (255, 255, 0),
         'I': (0, 255, 255),
         'T': (128, 0, 128),
@@ -41,6 +52,9 @@ class Colors(metaclass=AssetsType):
 
 
 class Images(metaclass=AssetsType):
+    """
+    An assets class with all of the images
+    """
     base_path = abspath('tetris/assets/images')
     assets = {
         'O': Loader.load_image(f'{base_path}/Yellow.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
@@ -58,6 +72,9 @@ class Images(metaclass=AssetsType):
 
 
 class Fonts(metaclass=AssetsType):
+    """
+    An assets class with all of the fonts
+    """
     base_path = abspath('tetris/assets/fonts')
     assets = {
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),

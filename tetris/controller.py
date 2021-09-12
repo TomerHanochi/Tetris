@@ -6,12 +6,18 @@ from tetris.view import View
 
 
 class Controller:
+    """
+    Handles all user input and the main loop of the game
+    Controls both the view and the model
+    """
     def __init__(self) -> None:
         self.__model = Model()
         self.__view = View(self.__model)
 
     def handle(self, event) -> None:
+        # Handles the various pygame events
         if event.type == pg.QUIT:
+            # if the close window button was clicked
             pg.quit()
             sys.exit()
         elif event.type == pg.KEYDOWN:
@@ -38,12 +44,12 @@ class Controller:
                 self.__model.stop_soft_drop()
 
     def run(self) -> None:
+        # main loop for the game
         while True:
+            # handles all current events
             for event in pg.event.get():
                 self.handle(event)
 
-            self.__view.update()
+            self.__model.update()
 
-    @property
-    def model(self) -> Model:
-        return self.__model
+            self.__view.update()

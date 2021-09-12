@@ -3,6 +3,12 @@ from tetris.utils.consts import Consts
 
 class Block:
     def __init__(self, parent: str, i: int, j: int) -> None:
+        """
+        The base class for the tetrominoes
+        :param parent: the name of the parent of the block, used later to get color
+        :param i: the x index of the block
+        :param j: the y index of the block
+        """
         self.parent = parent
         self.__i, self.__j = i, j
 

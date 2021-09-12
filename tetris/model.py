@@ -6,23 +6,36 @@ from tetris.components.ghost_tetromino import GhostTetromino
 
 
 class Model:
+    """
+    The main data structure for the game, includes:
+    1. All Blocks
+    2. Current tetromino
+    3. Held tetromino
+    4. Next Tetrominoes
+    5. Ghost Tetrominoes
+    """
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = self.__tetromino_set.remove()
+        self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, blocks=[])
         self.__blocks = []
-        self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, self.blocks)
+        # a property where the held tetromino can be stored
         self.__held_tetromino = None
+        # a tetromino can be held only once per 'turn'
         self.__can_be_held = True
+
+        # should: whether the command for the block to move was called
+        # cooldown: the number of frames before a block moves
         self.__should_move_right = False
         self.__move_right_cooldown = 0
         self.__should_move_left = False
         self.__move_left_cooldown = 0
-        self.__move_down_cooldown = 0
         self.__should_soft_drop = False
         self.__soft_drop_cooldown = 0
+        self.__move_down_cooldown = 0
+
         self.__rows_cleared = 0
         self.__score = 0
-        self.__cells_dropped = 0
 
     def update(self) -> None:
         if self.__should_move_right and self.can_move_right:
@@ -45,15 +58,20 @@ class Model:
 
         if self.can_move_down:
             self.move_down()
+        # if the current tetromino can't move down, that means it needs to be replaced
         else:
+            # the current tetrominoes blocks are appended to the all blocks list
             self.__blocks.extend(self.cur_tetromino.blocks)
 
             self.clear_rows()
 
+            # if there aren't enough tetrominoes in the set, generate new ones
             if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
                 self.__tetromino_set.generate_new_tetrominoes()
 
+            # replace tetromino
             self.__cur_tetromino = self.__tetromino_set.remove()
+            # reset held 'cooldown'
             self.__can_be_held = True
 
     @property
@@ -109,6 +127,7 @@ class Model:
     def soft_drop(self) -> None:
         self.cur_tetromino.move_down()
         self.__soft_drop_cooldown = Consts.SOFT_DROP_COOLDOWN
+        # award points for each cell dropped in soft drop
         self.__score += Consts.SOFT_DROP_MULT
 
     def stop_soft_drop(self) -> None:
@@ -117,40 +136,55 @@ class Model:
     def hard_drop(self) -> None:
         while self.cur_tetromino.can_move_down(self.blocks):
             self.cur_tetromino.move_down()
+            # award points for each cell dropped in hard drop
             self.__score += Consts.HARD_DROP_MULT
 
     def clear_rows(self) -> None:
-        indecies = [block.j for block in self.blocks]
-        indecies = {index for index in indecies if indecies.count(index) == Consts.GRID_WIDTH}
-        clearable = {block for block in self.blocks if block.j in indecies}
-        for block in clearable:
-            self.blocks.remove(block)
-            del block
+        # list of indecies of the row of each block
+        all_rows = [block.j for block in self.blocks]
+        # a set of indecies of rows that are full
+        clearable = {row for row in all_rows if all_rows.count(row) == Consts.GRID_WIDTH}
+        if clearable:
+            # a set of all blocks that are removable
+            removable = {block for block in self.blocks if block.j in clearable}
+            for block in removable:
+                self.blocks.remove(block)
+                del block
 
-        if indecies:
-            lowest_row_index = max(indecies)
-            rows = sorted({block.j for block in self.blocks if block.j < lowest_row_index},
-                          reverse=True)
-            floating = [
-                [block for block in self.blocks if block.j == row] for row in rows
+            # the lowest cleared row
+            lowest_row_index = max(clearable)
+            # indecies of rows above the lowest cleared row, sorted from the bottom to top
+            floating_rows = sorted({block.j for block in self.blocks if block.j < lowest_row_index},
+                                   reverse=True)
+            # all floating blocks split by the rows they're in
+            floating_blocks = [
+                [block for block in self.blocks if block.j == floating_row_index]
+                for floating_row_index in floating_rows
             ]
-            for row in floating:
+            for row in floating_blocks:
+                # as long as none of the blocks in the current row can't move down, move down
                 while all(not block.collide_down(other) for block in row for other in self.blocks
                           if other is not block) and all(block.can_move_down for block in row):
                     for block in row:
                         block.move_down()
 
-        cleared = len(indecies)
+        # the number of lines cleared (max of 4)
+        cleared = len(clearable)
+        # if there were cleared rows
         if cleared:
             self.__rows_cleared += cleared
+            # increase the score according to the row clear multiplier
             self.__score += Consts.ROW_CLEAR_MULT[cleared - 1] * (self.level + 1)
 
     def hold(self) -> None:
         if self.__can_be_held:
             if self.held_tetromino is None:
+                # create a copy of the current tetromino
                 self.__held_tetromino = Tetromino(self.cur_tetromino.name)
+                # switch the current one to a new one from the set
                 self.__cur_tetromino = self.__tetromino_set.remove()
             else:
+                # switch the held and current tetrominoes
                 temp = self.__cur_tetromino
                 self.__cur_tetromino = Tetromino(self.__held_tetromino.name)
                 self.__held_tetromino = Tetromino(temp.name)
@@ -158,10 +192,12 @@ class Model:
 
     @property
     def terminal(self) -> bool:
+        # whether the game has ended
         return any(block.j <= 0 for block in self.blocks)
 
     @property
     def next(self) -> list[Tetromino]:
+        # get a list of the next Const.NEXT_SET_SIZE next tetrominoes
         return self.__tetromino_set.get_next()
 
     @property
@@ -186,11 +222,11 @@ class Model:
         return self.__rows_cleared
 
     @property
-    def level(self) -> int:
-        level = int(self.rows_cleared * .1)
-        return (0 if level < 0 else
-                level if level < 28 else 28)
-
-    @property
     def score(self) -> int:
         return self.__score
+
+    @property
+    def level(self) -> int:
+        # the level increases for every ten rows cleared and caps at 28
+        level = int(self.rows_cleared * .1)
+        return level if level < 28 else 28

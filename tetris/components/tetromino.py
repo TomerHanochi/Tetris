@@ -6,11 +6,18 @@ from tetris.utils.consts import Consts
 
 class Tetromino:
     def __init__(self, name: str) -> None:
+        """
+        A tetromino is a geometric shape built by 4 blocks.
+        their name correspond to their shape
+        :param name: the name of the tetromino, used to decide its rotations
+                     and starting position
+        """
         self.__name = name
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         a, b = Consts.STARTING_POSITIONS[name]
         self.__x = randint(a, b)
+        # the default y position is just above the board, by default
         self.__y = -2
         self.blocks = [
             Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
