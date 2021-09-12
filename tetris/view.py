@@ -105,35 +105,20 @@ class View:
         self.draw_existing_blocks(x, y)
 
     def draw_statistics(self, x: float, y: float) -> None:
-        sub_title = Fonts.sub_title.render(f'SCORE', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = y + sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (x, sub_title_y))
+        statistics = [('SCORE', f'{self.__model.score}'),
+                      ('LEVEL', f'{self.__model.level}'),
+                      ('CLEARED', f'{self.__model.rows_cleared}'), ]
+        sub_title_y = y
+        for (title, value) in statistics:
+            sub_title = Fonts.sub_title.render(title, True, Colors.title,
+                                               Colors.background)
+            sub_title_y += sub_title.get_height() * 2
+            self.__window.blit(sub_title, (x, sub_title_y))
 
-        sub_title = Fonts.sub_title.render(f'{self.__model.score}', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (x, sub_title_y))
-
-        sub_title = Fonts.sub_title.render(f'LEVEL', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 2
-        self.__window.blit(sub_title, (x, sub_title_y))
-
-        sub_title = Fonts.sub_title.render(f'{self.__model.level}', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (x, sub_title_y))
-
-        sub_title = Fonts.sub_title.render(f'CLEARED', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 2
-        self.__window.blit(sub_title, (x, sub_title_y))
-
-        sub_title = Fonts.sub_title.render(f'{self.__model.rows_cleared}', True, Colors.title,
-                                           Colors.background)
-        sub_title_y = sub_title_y + sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (x, sub_title_y))
+            sub_title = Fonts.sub_title.render(value, True, Colors.title,
+                                               Colors.background)
+            sub_title_y += sub_title.get_height() * 1.25
+            self.__window.blit(sub_title, (x, sub_title_y))
 
     def update(self) -> None:
         self.__model.update()
