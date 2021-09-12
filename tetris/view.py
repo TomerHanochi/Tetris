@@ -75,9 +75,7 @@ class View:
                 self.draw_block(pos_x, pos_y, block)
 
     def draw_statistics(self, x: float, y: float) -> None:
-        """
-        Draws the statistics, at an even distance from each other
-        """
+        """Draws the statistics, at an even distance from each other"""
         statistics = [('SCORE', f'{self.__model.score}'),
                       ('LEVEL', f'{self.__model.level}'),
                       ('CLEARED', f'{self.__model.rows_cleared}'), ]
@@ -129,9 +127,7 @@ class View:
                 self.draw_block(x, y, block)
 
     def draw_board(self) -> None:
-        """
-        Draws the entire board
-        """
+        """Draws the entire board"""
         block_size = Consts.BLOCK_SIZE
         x = (self.__w - Consts.GRID_WIDTH * block_size) * .5
         y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) * .5
