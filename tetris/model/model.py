@@ -1,8 +1,8 @@
-from tetris.utils.consts import Consts
-from tetris.components.block import Block
-from tetris.components.tetromino import Tetromino
-from tetris.components.tetromino_set import TetrominoSet
-from tetris.components.ghost_tetromino import GhostTetromino
+from tetris.consts import Consts
+from tetris.model.block import Block
+from tetris.model.tetromino import Tetromino
+from tetris.model.tetromino_set import TetrominoSet
+from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Model:
@@ -38,41 +38,42 @@ class Model:
         self.__score = 0
 
     def update(self) -> None:
-        if self.__should_move_right and self.can_move_right:
-            self.move_right()
-        elif self.__move_right_cooldown > 0:
-            self.__move_right_cooldown -= 1
+        if not self.terminal:
+            if self.__should_move_right and self.can_move_right:
+                self.move_right()
+            elif self.__move_right_cooldown > 0:
+                self.__move_right_cooldown -= 1
 
-        if self.__should_move_left and self.can_move_left:
-            self.move_left()
-        elif self.__move_left_cooldown > 0:
-            self.__move_left_cooldown -= 1
+            if self.__should_move_left and self.can_move_left:
+                self.move_left()
+            elif self.__move_left_cooldown > 0:
+                self.__move_left_cooldown -= 1
 
-        if self.__should_soft_drop and self.can_soft_drop:
-            self.soft_drop()
-        elif self.__soft_drop_cooldown > 0:
-            self.__soft_drop_cooldown -= 1
+            if self.__should_soft_drop and self.can_soft_drop:
+                self.soft_drop()
+            elif self.__soft_drop_cooldown > 0:
+                self.__soft_drop_cooldown -= 1
 
-        if self.__move_down_cooldown > 0:
-            self.__move_down_cooldown -= 1
+            if self.__move_down_cooldown > 0:
+                self.__move_down_cooldown -= 1
 
-        if self.can_move_down:
-            self.move_down()
-        # if the current tetromino can't move down, that means it needs to be replaced
-        else:
-            # the current tetrominoes blocks are appended to the all blocks list
-            self.__blocks.extend(self.cur_tetromino.blocks)
+            if self.can_move_down:
+                self.move_down()
+            # if the current tetromino can't move down, that means it needs to be replaced
+            else:
+                # the current tetrominoes blocks are appended to the all blocks list
+                self.__blocks.extend(self.cur_tetromino.blocks)
 
-            self.clear_rows()
+                self.clear_rows()
 
-            # if there aren't enough tetrominoes in the set, generate new ones
-            if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
-                self.__tetromino_set.generate_new_tetrominoes()
+                # if there aren't enough tetrominoes in the set, generate new ones
+                if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
+                    self.__tetromino_set.generate_new_tetrominoes()
 
-            # replace tetromino
-            self.__cur_tetromino = self.__tetromino_set.remove()
-            # reset held 'cooldown'
-            self.__can_be_held = True
+                # replace tetromino
+                self.__cur_tetromino = self.__tetromino_set.remove()
+                # reset held 'cooldown'
+                self.__can_be_held = True
 
     @property
     def can_move_right(self) -> bool:
@@ -189,6 +190,9 @@ class Model:
                 self.__cur_tetromino = Tetromino(self.__held_tetromino.name)
                 self.__held_tetromino = Tetromino(temp.name)
             self.__can_be_held = False
+
+    def reset(self) -> None:
+        self.__init__()
 
     @property
     def terminal(self) -> bool:

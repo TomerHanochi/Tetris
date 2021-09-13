@@ -1,7 +1,7 @@
 from random import shuffle
 
-from tetris.components.tetromino import Tetromino
-from tetris.utils.consts import Consts
+from tetris.model.tetromino import Tetromino
+from tetris.consts import Consts
 
 
 class TetrominoSet:

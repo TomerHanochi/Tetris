@@ -1,4 +1,4 @@
-from tetris.utils.consts import Consts
+from tetris.consts import Consts
 
 
 class Block:

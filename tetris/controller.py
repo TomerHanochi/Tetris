@@ -2,14 +2,14 @@ import sys
 
 import pygame as pg
 
-from tetris.model import Model
-from tetris.view import View
+from tetris.model.model import Model
+from tetris.pygame_view.view import View
 
 
 class Controller:
     """
     Handles all user input and the main loop of the game
-    Controls both the view and the model
+    Controls both the pygame_view and the model
     """
     def __init__(self) -> None:
         self.__model = Model()
@@ -43,6 +43,8 @@ class Controller:
                 self.__model.stop_move_left()
             elif event.key == pg.K_DOWN:
                 self.__model.stop_soft_drop()
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            self.__view.click()
 
     def run(self) -> None:
         # main loop for the game

@@ -1,7 +1,7 @@
 from os.path import abspath
 import pygame as pg
 
-from tetris.utils.consts import Consts
+from tetris.consts import Consts
 
 
 class AssetsType(type):
@@ -29,7 +29,7 @@ class Loader:
 
     @staticmethod
     def load_font(path: str, size: int or float):
-        return pg.font.Font(path, size)
+        return pg.font.Font(path, int(size))
 
 
 class Colors(metaclass=AssetsType):
@@ -41,13 +41,8 @@ class Colors(metaclass=AssetsType):
         'title': (255, 255, 255),
         'sub_title': (255, 255, 255),
         'statistic': (255, 255, 255),
-        'O': (255, 255, 0),
-        'I': (0, 255, 255),
-        'T': (128, 0, 128),
-        'S': (0, 255, 0),
-        'Z': (255, 0, 0),
-        'L': (0, 0, 255),
-        'J': (255, 128, 0),
+        'button_background': (0, 0, 0),
+        'button_text': (255, 255, 255),
     }
 
 
@@ -79,4 +74,5 @@ class Fonts(metaclass=AssetsType):
     assets = {
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
         'sub_title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
+        'button': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
     }

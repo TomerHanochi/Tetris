@@ -1,8 +1,9 @@
 import pygame as pg
 
-from tetris.utils.consts import Consts
 from tetris.assets.assets import Colors, Images, Fonts
-from tetris.model import Model
+from tetris.pygame_view.button import Button
+from tetris.model.model import Model
+from tetris.consts import Consts
 
 
 class View:
@@ -18,6 +19,8 @@ class View:
         self.__fps = Consts.FRAME_RATE
         # a clock to ensure the game runs at that constant fps
         self.__fps_clock = pg.time.Clock()
+        y = (self.__h - (Consts.GRID_HEIGHT - 16 - Consts.NEXT_SET_SIZE * 6) * Consts.BLOCK_SIZE) * .5
+        self.__reset_button = Button(Consts.BLOCK_SIZE, y, 'RESTART', self.__model.reset)
 
     def draw_title(self) -> None:
         block_size = Consts.BLOCK_SIZE
@@ -66,7 +69,7 @@ class View:
         """
         width, height = 7, Consts.NEXT_SET_SIZE * 3 + 1
         x = Consts.BLOCK_SIZE
-        y = (self.__h - (Consts.GRID_HEIGHT - 6) * Consts.BLOCK_SIZE) * .5
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
         self.draw_border(x, y, width, height)
 
         sub_title = Fonts.sub_title.render('NEXT', True, Colors.sub_title, Colors.background)
@@ -77,7 +80,7 @@ class View:
         for j, tetromino in enumerate(self.__model.next):
             pos_x = x + (width - tetromino.width - 1) * Consts.BLOCK_SIZE * .5 - \
                     tetromino.x * Consts.BLOCK_SIZE
-            pos_y = y + (j * 3 + 4) * Consts.BLOCK_SIZE
+            pos_y = y + (j * 3 - Consts.Y_OFFSET + 2) * Consts.BLOCK_SIZE
             for block in tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
@@ -105,7 +108,7 @@ class View:
         """
         width, height = 7, 4
         x = self.__w - (width + 1) * Consts.BLOCK_SIZE
-        y = (self.__h - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5 + 3 * Consts.BLOCK_SIZE
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
         self.draw_border(x, y, width, height)
 
         sub_title = Fonts.sub_title.render('HELD', True, Colors.sub_title, Colors.background)
@@ -117,8 +120,8 @@ class View:
 
         held = self.__model.held_tetromino
         if held is not None:
-            pos_x = x + (width - held.width - 1) * Consts.BLOCK_SIZE * .5 - held.x * Consts.BLOCK_SIZE
-            pos_y = y + (height - held.height + 1) * Consts.BLOCK_SIZE * .5 + 2 * Consts.BLOCK_SIZE
+            pos_x = x + (width - held.width - 1 - held.x * 2) * Consts.BLOCK_SIZE * .5
+            pos_y = y + (height - held.height - Consts.Y_OFFSET * 2 + 1) * Consts.BLOCK_SIZE * .5
             for block in self.__model.held_tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
@@ -144,6 +147,10 @@ class View:
         self.draw_current_tetromino(x, y)
         self.draw_existing_blocks(x, y)
 
+    def click(self) -> None:
+        if self.__reset_button.is_clicked:
+            self.__reset_button.click()
+
     def update(self) -> None:
         """
         Clears the screen, then redraws everything
@@ -154,6 +161,7 @@ class View:
         self.draw_board()
         self.draw_next()
         self.draw_held()
+        self.__reset_button.draw(self.__window)
 
         pg.display.flip()
 

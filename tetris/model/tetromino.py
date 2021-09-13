@@ -1,7 +1,7 @@
 from random import randint
 
-from tetris.components.block import Block
-from tetris.utils.consts import Consts
+from tetris.model.block import Block
+from tetris.consts import Consts
 
 
 class Tetromino:
@@ -18,7 +18,7 @@ class Tetromino:
         a, b = Consts.STARTING_POSITIONS[name]
         self.__x = randint(a, b)
         # the default y position is just above the board, by default
-        self.__y = -2
+        self.__y = Consts.Y_OFFSET
         self.blocks = [
             Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
         ]

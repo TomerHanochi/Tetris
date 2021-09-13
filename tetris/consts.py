@@ -75,4 +75,5 @@ class Consts:
         'L': (0, 4),
         'J': (0, 4),
     }
+    Y_OFFSET = -4
     TETROMINO_NAMES = ROTATIONS.keys()

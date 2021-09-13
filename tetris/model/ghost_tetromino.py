@@ -1,4 +1,4 @@
-from tetris.components.block import Block
+from tetris.model.block import Block
 
 
 class GhostTetromino:
