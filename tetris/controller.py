@@ -3,13 +3,13 @@ import sys
 import pygame as pg
 
 from tetris.model.model import Model
-from tetris.pygame_view.view import View
+from tetris.view.view import View
 
 
 class Controller:
     """
     Handles all user input and the main loop of the game
-    Controls both the pygame_view and the model
+    Controls both the view and the model
     """
     def __init__(self) -> None:
         self.__model = Model()

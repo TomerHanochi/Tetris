@@ -1,7 +1,7 @@
 import pygame as pg
 
 from tetris.assets.assets import Colors, Images, Fonts
-from tetris.pygame_view.button import Button
+from tetris.view.button import Button
 from tetris.model.model import Model
 from tetris.consts import Consts
 
