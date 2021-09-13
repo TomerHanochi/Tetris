@@ -33,6 +33,13 @@ class View:
         self.__window.blit(image, rect)
 
     def draw_border(self, x: int, y: int, width: int, height: int) -> None:
+        """
+        Draws a border made of black blocks - assets/images/Border.png
+        :param x: top left x
+        :param y: top left y
+        :param width: amount of blocks in width
+        :param height: amount of blocks i  height - 2
+        """
         image = getattr(Images, 'border')
         for i in range(width):
             pos_x, pos_y = x + i * Consts.BLOCK_SIZE, y
