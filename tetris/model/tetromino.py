@@ -23,23 +23,28 @@ class Tetromino:
             Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
         ]
 
-    def rotate_right(self) -> None:
+    def illegal_position(self, blocks) -> bool:
+        """Checks whether the current rotation is out of bounds or overlaps with existing blocks"""
+        return (self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH or
+                any(block.overlap(other) for other in blocks for block in self.blocks))
+
+    def rotate_right(self, blocks) -> None:
         """Rotates the piece right, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation + 1) % len(self.__rotations)
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH:
-            self.rotate_left()
+        if self.illegal_position(blocks):
+            self.rotate_left(blocks)
 
-    def rotate_left(self) -> None:
+    def rotate_left(self, blocks) -> None:
         """Rotates the piece left, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation - 1) % len(self.__rotations)
         for block, (i, j) in zip(self.blocks, self.rotation):
             block.i = self.__x + i
             block.j = self.__y + j
-        if self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH:
-            self.rotate_right()
+        if self.illegal_position(blocks):
+            self.rotate_right(blocks)
 
     def can_move_right(self, blocks) -> bool:
         return (self.rightmost.can_move_right and

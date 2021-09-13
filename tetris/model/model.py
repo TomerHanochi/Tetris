@@ -113,10 +113,10 @@ class Model:
             self.__move_down_cooldown = Consts.COOLDOWN_BY_LEVEL[self.level]
 
     def rotate_right(self) -> None:
-        self.cur_tetromino.rotate_right()
+        self.cur_tetromino.rotate_right(self.blocks)
 
     def rotate_left(self) -> None:
-        self.cur_tetromino.rotate_left()
+        self.cur_tetromino.rotate_left(self.blocks)
 
     @property
     def can_soft_drop(self) -> bool:

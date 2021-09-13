@@ -33,6 +33,9 @@ class Block:
     def move_down(self) -> None:
         self.__j += 1
 
+    def overlap(self, other) -> bool:
+        return self.i == other.i and self.j == other.j
+
     def collide_down(self, other) -> bool:
         return self.i == other.i and self.j + 1 == other.j
 
