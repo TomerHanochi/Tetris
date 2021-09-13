@@ -1,6 +1,6 @@
 import pygame as pg
 
-from tetris.assets.assets import Colors, Images, Fonts
+from tetris.assets.assets import Colors, Images, Fonts, Sounds
 from tetris.view.button import Button
 from tetris.model.model import Model
 from tetris.consts import Consts
@@ -21,6 +21,8 @@ class View:
         self.__fps_clock = pg.time.Clock()
         y = (self.__h - (Consts.GRID_HEIGHT - 16 - Consts.NEXT_SET_SIZE * 6) * Consts.BLOCK_SIZE) * .5
         self.__reset_button = Button(Consts.BLOCK_SIZE, y, 'RESTART', self.__model.reset)
+
+        Sounds.music.play(loops=-1)
 
     def draw_title(self) -> None:
         block_size = Consts.BLOCK_SIZE

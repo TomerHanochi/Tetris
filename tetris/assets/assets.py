@@ -22,14 +22,18 @@ class Loader:
     Used so there is only one place that needs to be changed
     """
     @staticmethod
-    def load_image(path: str, width: int or float, height: int or float):
+    def load_image(path: str, width: int or float, height: int or float) -> pg.Surface:
         return pg.transform.smoothscale(
             pg.image.load(path), (int(width), int(height))
         )
 
     @staticmethod
-    def load_font(path: str, size: int or float):
+    def load_font(path: str, size: int or float) -> pg.font.Font:
         return pg.font.Font(path, int(size))
+
+    @staticmethod
+    def load_sound(path: str) -> pg.mixer.Sound:
+        return pg.mixer.Sound(path)
 
 
 class Colors(metaclass=AssetsType):
@@ -75,4 +79,14 @@ class Fonts(metaclass=AssetsType):
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
         'sub_title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
         'button': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
+    }
+
+
+class Sounds(metaclass=AssetsType):
+    """
+    An assets class with all of the sounds
+    """
+    base_path = abspath('tetris/assets/sounds')
+    assets = {
+        'music': Loader.load_sound(f'{base_path}/music.mp3'),
     }
