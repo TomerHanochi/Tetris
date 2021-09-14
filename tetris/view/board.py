@@ -23,6 +23,9 @@ class Board(ViewObject):
             self.__window.blit(image, (pos_x, pos_y))
             self.__window.blit(image, (pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y))
 
+    def draw_tetromino(self, x: int, y: int) -> None:
+        pass
+
     def draw(self) -> None:
         x = (Consts.SCREEN_WIDTH - Consts.GRID_WIDTH * Consts.BLOCK_SIZE) * .5
         y = (Consts.SCREEN_HEIGHT - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5

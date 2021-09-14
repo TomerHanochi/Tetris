@@ -171,7 +171,7 @@ class View:
                 view_object.draw()
 
         # self.draw_title()
-        self.draw_board()
+        # self.draw_board()
         # self.draw_next()
         # self.draw_held()
         # self.__reset_button.draw(self.__window)
