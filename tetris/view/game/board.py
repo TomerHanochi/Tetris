@@ -11,12 +11,6 @@ class Board(ViewObject):
         self.__y = y
         self.__model = model
 
-    def draw_cur_tetromino(self, x: float, y: float) -> None:
-        tetromino = self.model.cur_tetromino
-        rotation = [(i, j) for (i, j) in tetromino.rotation if tetromino.y + j >= 0]
-        Draw.tetromino(x + tetromino.x * Consts.BLOCK_SIZE, y + tetromino.y * Consts.BLOCK_SIZE,
-                       rotation, tetromino.name)
-
     def draw(self) -> None:
         Draw.border(self.x, self.y, self.w, self.h)
 

@@ -24,12 +24,14 @@ class Stats(ViewObject):
     def draw(self) -> None:
         statistic_y = self.y
         for stat_name, rendered_stat in self.stats.items():
+            # offset each stat so that it is easier to read
             statistic_y += rendered_stat.get_height() * 2.25
             Draw.image(x=self.x + (self.w - rendered_stat.get_width()) * .5,
                        y=statistic_y, image=rendered_stat)
 
             stat_value = Fonts.statistic.render(str(getattr(self.model, stat_name)), True,
                                                 Colors.statistic, Colors.background)
+            # offset each stat value so that it is easier to read
             statistic_y += stat_value.get_height() * 1.25
             Draw.image(self.x + (self.w - stat_value.get_width()) * .5, statistic_y, stat_value)
 
