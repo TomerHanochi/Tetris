@@ -25,10 +25,9 @@ class View:
         Sounds.music.play(loops=-1)
 
     def draw_title(self) -> None:
-        block_size = Consts.BLOCK_SIZE
         title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
         title_x = (self.__w - title.get_width()) * .5
-        title_y = (self.__h - Consts.GRID_HEIGHT * block_size) * .5 - title.get_height() * 1.25
+        title_y = (self.__h - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5 - title.get_height() * 1.25
         self.__window.blit(title, (title_x, title_y))
 
     def draw_block(self, x: int, y: int, block) -> None:
@@ -140,11 +139,10 @@ class View:
 
     def draw_board(self) -> None:
         """Draws the entire board"""
-        block_size = Consts.BLOCK_SIZE
-        x = (self.__w - Consts.GRID_WIDTH * block_size) * .5
-        y = (self.__h - (Consts.GRID_HEIGHT - 2) * block_size) * .5
+        x = (self.__w - Consts.GRID_WIDTH * Consts.BLOCK_SIZE) * .5
+        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
 
-        self.draw_board_border(x - block_size, y - block_size)
+        self.draw_board_border(x - Consts.BLOCK_SIZE, y - Consts.BLOCK_SIZE)
         self.draw_ghost_tetromino(x, y)
         self.draw_current_tetromino(x, y)
         self.draw_existing_blocks(x, y)

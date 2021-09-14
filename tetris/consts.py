@@ -3,7 +3,7 @@ class Consts:
     Class of constant values used throughout the game
     Used to make sure there is no need to scour files to change constants
     """
-    SCREEN_SIZE = 1200, 1000
+    SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1200, 1000
     BLOCK_SIZE = 40
     GRID_WIDTH = 10
     GRID_HEIGHT = 20
