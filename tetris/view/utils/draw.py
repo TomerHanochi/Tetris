@@ -11,7 +11,18 @@ class Draw:
         return pg.display.get_surface()
 
     @staticmethod
-    def image(x: int, y: int, image: pg.Surface):
+    def fill(x: float, y: float, w: float, h: float, color: tuple[int, int, int]) -> None:
+        """
+        :param x: top left x coordinate
+        :param y: top left y coordinate
+        :param w: width of the filled area
+        :param h: height of the filled area
+        :param color: fill color
+        """
+        Draw.window().fill(color, (x, y, w, h))
+
+    @staticmethod
+    def image(x: float, y: float, image: pg.Surface):
         """
         :param x: top left x coordinate
         :param y: top left y coordinate
@@ -20,7 +31,7 @@ class Draw:
         Draw.window().blit(image, (x, y))
 
     @staticmethod
-    def tetromino(x: int, y: int, rotation: list[tuple[int, int]],
+    def tetromino(x: float, y: float, rotation: list[tuple[int, int]],
                   name: str) -> None:
         """
         :param x: top left x coordinate
@@ -34,14 +45,14 @@ class Draw:
                        x=(x + i * Consts.BLOCK_SIZE), y=(y + j * Consts.BLOCK_SIZE))
 
     @staticmethod
-    def border(x: int, y: int, width: int, height: int) -> None:
+    def border(x: float, y: float, width: int, height: int) -> None:
         """
         :param x: top left x coordinate
         :param y: top left y coordinate
         :param width: the number of blocks in width
         :param height: the number of blocks in height
         """
-        image = getattr(Images, 'border')
+        image = Images.border
         for i in range(width):
             pos_x, pos_y = x + i * Consts.BLOCK_SIZE, y
             Draw.image(pos_x, pos_y, image)

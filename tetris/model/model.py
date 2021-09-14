@@ -36,6 +36,7 @@ class Model:
 
         self.__rows_cleared = 0
         self.__score = 0
+        self.__high_score = 0
 
     def update(self) -> None:
         if not self.terminal:
@@ -57,6 +58,10 @@ class Model:
             if self.__move_down_cooldown > 0:
                 self.__move_down_cooldown -= 1
 
+            # if there aren't enough tetrominoes in the set, generate new ones
+            if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
+                self.__tetromino_set.generate_new_tetrominoes()
+
             if self.can_move_down:
                 self.move_down()
             # if the current tetromino can't move down, that means it needs to be replaced
@@ -65,10 +70,6 @@ class Model:
                 self.__blocks.extend(self.cur_tetromino.blocks)
 
                 self.clear_rows()
-
-                # if there aren't enough tetrominoes in the set, generate new ones
-                if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
-                    self.__tetromino_set.generate_new_tetrominoes()
 
                 # replace tetromino
                 self.__cur_tetromino = self.__tetromino_set.remove()
@@ -222,7 +223,7 @@ class Model:
         return self.__blocks
 
     @property
-    def rows_cleared(self) -> int:
+    def cleared(self) -> int:
         return self.__rows_cleared
 
     @property
@@ -230,7 +231,11 @@ class Model:
         return self.__score
 
     @property
+    def high_score(self) -> int:
+        return self.__high_score
+
+    @property
     def level(self) -> int:
         # the level increases for every ten rows cleared and caps at 28
-        level = int(self.rows_cleared * .1)
+        level = int(self.cleared * .1)
         return level if level < 28 else 28

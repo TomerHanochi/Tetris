@@ -78,6 +78,7 @@ class Fonts(metaclass=AssetsType):
     assets = {
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
         'sub_title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
+        'statistic': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * .8),
         'button': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
     }
 

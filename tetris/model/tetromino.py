@@ -108,11 +108,11 @@ class Tetromino:
 
     @property
     def width(self) -> int:
-        return abs(self.x - self.rightmost.i)
+        return abs(self.x - self.rightmost.i) + 1
 
     @property
     def height(self) -> int:
-        return abs(self.y - self.bottommost.j)
+        return abs(self.y - self.bottommost.j) + 1
 
     @property
     def name(self) -> str:

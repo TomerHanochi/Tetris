@@ -1,9 +1,13 @@
 import pygame as pg
 
-from tetris.assets.assets import Colors, Images, Fonts, Sounds
-from tetris.view.view_object import ViewObject
-from tetris.view.button import Button
-from tetris.view.board import Board
+from tetris.assets.assets import Colors, Fonts, Sounds
+from tetris.view.utils.view_object import ViewObject
+from tetris.view.utils.draw import Draw
+from tetris.view.utils.button import Button
+from tetris.view.game.board import Board
+from tetris.view.game.held import Held
+from tetris.view.game.next import Next
+from tetris.view.game.statistics import Stats
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -21,8 +25,6 @@ class View:
         self.__fps = Consts.FRAME_RATE
         # a clock to ensure the game runs at that constant fps
         self.__fps_clock = pg.time.Clock()
-        y = (self.__h - (Consts.GRID_HEIGHT - 16 - Consts.NEXT_SET_SIZE * 6) * Consts.BLOCK_SIZE) * .5
-        self.__reset_button = Button(Consts.BLOCK_SIZE, y, 'RESTART', self.model.reset)
         # the stacking layers of the gui to choose what gets printed over what
         self.__layers = [[], []]
         self.setup_game()
@@ -30,105 +32,41 @@ class View:
 
     def draw_title(self) -> None:
         title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
-        title_x = (self.__w - title.get_width()) * .5
-        title_y = (self.__h - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5 - title.get_height() * 1.25
-        self.__window.blit(title, (title_x, title_y))
-
-    def draw_block(self, x: int, y: int, block) -> None:
-        rect = (x + block.i * Consts.BLOCK_SIZE, y + block.j * Consts.BLOCK_SIZE)
-
-        image = getattr(Images, block.parent)
-        self.__window.blit(image, rect)
-
-    def draw_border(self, x: int, y: int, width: int, height: int) -> None:
-        """
-        Draws a border made of black blocks - assets/images/Border.png
-        :param x: top left x
-        :param y: top left y
-        :param width: amount of blocks in width
-        :param height: amount of blocks i  height - 2
-        """
-        image = getattr(Images, 'border')
-        for i in range(width):
-            pos_x, pos_y = x + i * Consts.BLOCK_SIZE, y
-            self.__window.blit(image, (pos_x, pos_y))
-            self.__window.blit(image, (pos_x, pos_y + (height + 1) * Consts.BLOCK_SIZE))
-        for j in range(height):
-            pos_x, pos_y = x, y + (j + 1) * Consts.BLOCK_SIZE
-            self.__window.blit(image, (pos_x, pos_y))
-            self.__window.blit(image, (pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y))
-
-    def draw_next(self) -> None:
-        """
-        Draws the next Consts.NEXT_SET_SIZE tetrominoes,
-        the border around them and the sub title
-        """
-        width, height = 7, Consts.NEXT_SET_SIZE * 3 + 1
-        x = Consts.BLOCK_SIZE
-        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
-        self.draw_border(x, y, width, height)
-
-        sub_title = Fonts.sub_title.render('NEXT', True, Colors.sub_title, Colors.background)
-        sub_title_x = x + (width * Consts.BLOCK_SIZE - sub_title.get_width()) * .5
-        sub_title_y = y - sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (sub_title_x, sub_title_y))
-
-        for j, tetromino in enumerate(self.model.next):
-            pos_x = x + (width - tetromino.width - 1) * Consts.BLOCK_SIZE * .5 - \
-                    tetromino.x * Consts.BLOCK_SIZE
-            pos_y = y + (j * 3 - Consts.Y_OFFSET + 2) * Consts.BLOCK_SIZE
-            for block in tetromino.blocks:
-                self.draw_block(pos_x, pos_y, block)
-
-    def draw_statistics(self, x: float, y: float) -> None:
-        """Draws the statistics, at an even distance from each other"""
-        statistics = [('SCORE', f'{self.model.score}'),
-                      ('LEVEL', f'{self.model.level}'),
-                      ('CLEARED', f'{self.model.rows_cleared}'), ]
-        sub_title_y = y
-        for (title, value) in statistics:
-            sub_title = Fonts.sub_title.render(title, True, Colors.statistic,
-                                               Colors.background)
-            sub_title_y += sub_title.get_height() * 2
-            self.__window.blit(sub_title, (x, sub_title_y))
-
-            sub_title = Fonts.sub_title.render(value, True, Colors.statistic,
-                                               Colors.background)
-            sub_title_y += sub_title.get_height() * 1.25
-            self.__window.blit(sub_title, (x, sub_title_y))
-
-    def draw_held(self) -> None:
-        """
-        Draws the held tetromino, the border around it, the sub title
-        and the statistics right under it
-        """
-        width, height = 7, 4
-        x = self.__w - (width + 1) * Consts.BLOCK_SIZE
-        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
-        self.draw_border(x, y, width, height)
-
-        sub_title = Fonts.sub_title.render('HELD', True, Colors.sub_title, Colors.background)
-        sub_title_x = x + (width * Consts.BLOCK_SIZE - sub_title.get_width()) * .5
-        sub_title_y = y - sub_title.get_height() * 1.25
-        self.__window.blit(sub_title, (sub_title_x, sub_title_y))
-
-        self.draw_statistics(x, y + (height + 2) * Consts.BLOCK_SIZE)
-
-        held = self.model.held_tetromino
-        if held is not None:
-            pos_x = x + (width - held.width - 1 - held.x * 2) * Consts.BLOCK_SIZE * .5
-            pos_y = y + (height - held.height - Consts.Y_OFFSET * 2 + 1) * Consts.BLOCK_SIZE * .5
-            for block in self.model.held_tetromino.blocks:
-                self.draw_block(pos_x, pos_y, block)
+        title_x = (Consts.SCREEN_WIDTH - title.get_width()) * .5
+        title_y = (Consts.SCREEN_HEIGHT - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5 - title.get_height() * 1.25
+        Draw.image(title_x, title_y, title)
 
     def click(self) -> None:
-        if self.__reset_button.is_clicked:
-            self.__reset_button.click()
+        for layer in reversed(self.layers):
+            for view_object in layer:
+                if isinstance(view_object, Button) and view_object.is_clicked:
+                    view_object.click()
 
     def setup_game(self) -> None:
-        self.layers[0].extend([
-            Board(self.model)
-        ])
+        # Center part of the screen
+        board = Board(x=(self.w - (Consts.GRID_WIDTH + 2) * Consts.BLOCK_SIZE) * .5,
+                      y=(self.h - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5,
+                      model=self.model)
+
+        # Left part of the screen
+        next_ = Next(x=board.x,
+                     y=board.y + Consts.BLOCK_SIZE,
+                     model=self.model)
+
+        reset_button = Button(x=next_.x,
+                              y=next_.y + (next_.h + 1) * Consts.BLOCK_SIZE,
+                              text='RESTART', func=self.model.reset)
+
+        # Right part of the screen
+        held = Held(x=board.x + board.w * Consts.BLOCK_SIZE,
+                    y=board.y + Consts.BLOCK_SIZE,
+                    model=self.model)
+
+        stats = Stats(x=board.x + board.w * Consts.BLOCK_SIZE,
+                      y=held.y + held.h * Consts.BLOCK_SIZE,
+                      model=self.model)
+
+        self.layers[0].extend([next_, held, stats, board, reset_button])
 
     def update(self) -> None:
         """
@@ -141,9 +79,6 @@ class View:
                 view_object.draw()
 
         self.draw_title()
-        self.draw_next()
-        self.draw_held()
-        self.__reset_button.draw(self.__window)
 
         pg.display.flip()
 
@@ -157,3 +92,11 @@ class View:
     @property
     def model(self) -> Model:
         return self.__model
+
+    @property
+    def w(self) -> int:
+        return Consts.SCREEN_WIDTH
+
+    @property
+    def h(self) -> int:
+        return Consts.SCREEN_HEIGHT
