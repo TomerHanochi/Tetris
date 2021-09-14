@@ -58,15 +58,6 @@ class View:
             self.__window.blit(image, (pos_x, pos_y))
             self.__window.blit(image, (pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y))
 
-    def draw_tetromino(self, x, y, tetromino) -> None:
-        for block in tetromino.blocks:
-            if block.in_board:
-                self.draw_block(x, y, block)
-
-    def draw_board_border(self, x: int, y: int):
-        width, height = Consts.GRID_WIDTH + 2, Consts.GRID_HEIGHT
-        self.draw_border(x, y, width, height)
-
     def draw_next(self) -> None:
         """
         Draws the next Consts.NEXT_SET_SIZE tetrominoes,
@@ -130,27 +121,6 @@ class View:
             for block in self.model.held_tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
-    def draw_current_tetromino(self, x: int, y: int):
-        self.draw_tetromino(x, y, self.model.cur_tetromino)
-
-    def draw_ghost_tetromino(self, x: int, y: int) -> None:
-        self.draw_tetromino(x, y, self.model.ghost_tetromino)
-
-    def draw_existing_blocks(self, x: int, y: int):
-        for block in self.model.blocks:
-            if block.in_board:
-                self.draw_block(x, y, block)
-
-    def draw_board(self) -> None:
-        """Draws the entire board"""
-        x = (self.__w - Consts.GRID_WIDTH * Consts.BLOCK_SIZE) * .5
-        y = (self.__h - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
-
-        self.draw_board_border(x - Consts.BLOCK_SIZE, y - Consts.BLOCK_SIZE)
-        self.draw_ghost_tetromino(x, y)
-        self.draw_current_tetromino(x, y)
-        self.draw_existing_blocks(x, y)
-
     def click(self) -> None:
         if self.__reset_button.is_clicked:
             self.__reset_button.click()
@@ -170,11 +140,10 @@ class View:
             for view_object in layer:
                 view_object.draw()
 
-        # self.draw_title()
-        # self.draw_board()
-        # self.draw_next()
-        # self.draw_held()
-        # self.__reset_button.draw(self.__window)
+        self.draw_title()
+        self.draw_next()
+        self.draw_held()
+        self.__reset_button.draw(self.__window)
 
         pg.display.flip()
 

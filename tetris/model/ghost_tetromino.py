@@ -40,3 +40,7 @@ class GhostTetromino:
         while self.can_move_down(blocks):
             for block in self.blocks:
                 block.move_down()
+
+    @property
+    def rotation(self) -> list[tuple[int, int]]:
+        return [(block.i, block.j) for block in self.blocks]

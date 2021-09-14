@@ -1,8 +1,9 @@
 import pygame as pg
 
 from tetris.assets.assets import Images
-from tetris.model.model import Model
 from tetris.view.view_object import ViewObject
+from tetris.view.draw import Draw
+from tetris.model.model import Model
 from tetris.consts import Consts
 
 
@@ -13,27 +14,26 @@ class Board(ViewObject):
 
     def draw_board_border(self, x: int, y: int) -> None:
         width, height = Consts.GRID_WIDTH + 2, Consts.GRID_HEIGHT + 2
-        image = getattr(Images, 'border')
-        for i in range(width):
-            pos_x, pos_y = x + i * Consts.BLOCK_SIZE, y
-            self.__window.blit(image, (pos_x, pos_y))
-            self.__window.blit(image, (pos_x, pos_y + (height + 1) * Consts.BLOCK_SIZE))
-        for j in range(height):
-            pos_x, pos_y = x, y + j * Consts.BLOCK_SIZE
-            self.__window.blit(image, (pos_x, pos_y))
-            self.__window.blit(image, (pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y))
+        Draw.border(x, y, width, height)
 
-    def draw_tetromino(self, x: int, y: int) -> None:
-        pass
+    def draw_cur_tetromino(self, x: int, y: int) -> None:
+        tetromino = self.model.cur_tetromino
+        rotation = [(i, j) for (i, j) in tetromino.rotation if tetromino.y + j >= 0]
+        Draw.tetromino(x + tetromino.x * Consts.BLOCK_SIZE, y + tetromino.y * Consts.BLOCK_SIZE,
+                       rotation, tetromino.name)
+
+    def draw_existing_blocks(self, x: int, y: int) -> None:
+        for block in self.model.blocks:
+            image = getattr(Images, block.parent)
+            Draw.image(x + block.i * Consts.BLOCK_SIZE, y + block.j * Consts.BLOCK_SIZE, image)
 
     def draw(self) -> None:
         x = (Consts.SCREEN_WIDTH - Consts.GRID_WIDTH * Consts.BLOCK_SIZE) * .5
         y = (Consts.SCREEN_HEIGHT - (Consts.GRID_HEIGHT - 2) * Consts.BLOCK_SIZE) * .5
 
         self.draw_board_border(x - Consts.BLOCK_SIZE, y - Consts.BLOCK_SIZE)
-        # self.draw_ghost_tetromino(x, y)
-        # self.draw_current_tetromino(x, y)
-        # self.draw_existing_blocks(x, y)
+        self.draw_cur_tetromino(x, y)
+        self.draw_existing_blocks(x, y)
 
     @property
     def model(self) -> Model:
