@@ -1,7 +1,9 @@
 import pygame as pg
 
 from tetris.assets.assets import Colors, Images, Fonts, Sounds
+from tetris.view.view_object import ViewObject
 from tetris.view.button import Button
+from tetris.view.board import Board
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -20,8 +22,10 @@ class View:
         # a clock to ensure the game runs at that constant fps
         self.__fps_clock = pg.time.Clock()
         y = (self.__h - (Consts.GRID_HEIGHT - 16 - Consts.NEXT_SET_SIZE * 6) * Consts.BLOCK_SIZE) * .5
-        self.__reset_button = Button(Consts.BLOCK_SIZE, y, 'RESTART', self.__model.reset)
-
+        self.__reset_button = Button(Consts.BLOCK_SIZE, y, 'RESTART', self.model.reset)
+        # the stacking layers of the gui to choose what gets printed over what
+        self.__layers = [[], []]
+        self.setup_game()
         Sounds.music.play(loops=-1)
 
     def draw_title(self) -> None:
@@ -78,7 +82,7 @@ class View:
         sub_title_y = y - sub_title.get_height() * 1.25
         self.__window.blit(sub_title, (sub_title_x, sub_title_y))
 
-        for j, tetromino in enumerate(self.__model.next):
+        for j, tetromino in enumerate(self.model.next):
             pos_x = x + (width - tetromino.width - 1) * Consts.BLOCK_SIZE * .5 - \
                     tetromino.x * Consts.BLOCK_SIZE
             pos_y = y + (j * 3 - Consts.Y_OFFSET + 2) * Consts.BLOCK_SIZE
@@ -87,9 +91,9 @@ class View:
 
     def draw_statistics(self, x: float, y: float) -> None:
         """Draws the statistics, at an even distance from each other"""
-        statistics = [('SCORE', f'{self.__model.score}'),
-                      ('LEVEL', f'{self.__model.level}'),
-                      ('CLEARED', f'{self.__model.rows_cleared}'), ]
+        statistics = [('SCORE', f'{self.model.score}'),
+                      ('LEVEL', f'{self.model.level}'),
+                      ('CLEARED', f'{self.model.rows_cleared}'), ]
         sub_title_y = y
         for (title, value) in statistics:
             sub_title = Fonts.sub_title.render(title, True, Colors.statistic,
@@ -119,21 +123,21 @@ class View:
 
         self.draw_statistics(x, y + (height + 2) * Consts.BLOCK_SIZE)
 
-        held = self.__model.held_tetromino
+        held = self.model.held_tetromino
         if held is not None:
             pos_x = x + (width - held.width - 1 - held.x * 2) * Consts.BLOCK_SIZE * .5
             pos_y = y + (height - held.height - Consts.Y_OFFSET * 2 + 1) * Consts.BLOCK_SIZE * .5
-            for block in self.__model.held_tetromino.blocks:
+            for block in self.model.held_tetromino.blocks:
                 self.draw_block(pos_x, pos_y, block)
 
     def draw_current_tetromino(self, x: int, y: int):
-        self.draw_tetromino(x, y, self.__model.cur_tetromino)
+        self.draw_tetromino(x, y, self.model.cur_tetromino)
 
     def draw_ghost_tetromino(self, x: int, y: int) -> None:
-        self.draw_tetromino(x, y, self.__model.ghost_tetromino)
+        self.draw_tetromino(x, y, self.model.ghost_tetromino)
 
     def draw_existing_blocks(self, x: int, y: int):
-        for block in self.__model.blocks:
+        for block in self.model.blocks:
             if block.in_board:
                 self.draw_block(x, y, block)
 
@@ -151,19 +155,36 @@ class View:
         if self.__reset_button.is_clicked:
             self.__reset_button.click()
 
+    def setup_game(self) -> None:
+        self.layers[0].extend([
+            Board(self.model)
+        ])
+
     def update(self) -> None:
         """
         Clears the screen, then redraws everything
         """
         self.__window.fill(Colors.background)
 
-        self.draw_title()
+        for layer in self.layers:
+            for view_object in layer:
+                view_object.draw()
+
+        # self.draw_title()
         self.draw_board()
-        self.draw_next()
-        self.draw_held()
-        self.__reset_button.draw(self.__window)
+        # self.draw_next()
+        # self.draw_held()
+        # self.__reset_button.draw(self.__window)
 
         pg.display.flip()
 
         # used to make sure the game runs at a stable fps
         self.__fps_clock.tick(self.__fps)
+
+    @property
+    def layers(self) -> list[list[ViewObject]]:
+        return self.__layers
+
+    @property
+    def model(self) -> Model:
+        return self.__model
