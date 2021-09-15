@@ -15,8 +15,8 @@ class Tetromino:
         self.__name = name
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
-        a, b = Consts.STARTING_POSITIONS[name]
-        self.__x = randint(a, b)
+        # the default y position is in the middle column, by default
+        self.__x = 4
         # the default y position is just above the board, by default
         self.__y = Consts.Y_OFFSET
         self.__blocks = [

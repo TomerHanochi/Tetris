@@ -16,9 +16,11 @@ class Controller:
         self.__view = View(self.__model)
 
     def handle(self, event) -> None:
-        # Handles the various pygame events
+        """Handles the various pygame events"""
         if event.type == pg.QUIT:
             # if the close window button was clicked
+            # update the high score and quit
+            self.__model.set_high_score()
             pg.quit()
             sys.exit()
         elif event.type == pg.KEYDOWN:

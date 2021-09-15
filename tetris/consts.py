@@ -65,15 +65,5 @@ class Consts:
             ((1, 0), (1, 1), (1, 2), (0, 0)),
         ),
     }
-    # the range of starting positions(inclusive) for each tetromino
-    STARTING_POSITIONS = {
-        'O': (3, 6),
-        'I': (3, 6),
-        'T': (0, 4),
-        'S': (0, 4),
-        'Z': (0, 4),
-        'L': (0, 4),
-        'J': (0, 4),
-    }
     Y_OFFSET = -4
     TETROMINO_NAMES = ROTATIONS.keys()

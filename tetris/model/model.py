@@ -37,10 +37,12 @@ class Model:
 
         self.__rows_cleared = 0
         self.__score = 0
-        self.__high_score = 0
+        self.__high_score = int(open('tetris/model/highscore.txt', 'r').read())
 
     def update(self) -> None:
-        if not self.terminal:
+        if self.terminal:
+            self.set_high_score()
+        else:
             self.__ghost_tetromino.update(x=self.cur_tetromino.x, blocks=self.blocks,
                                           rotation=self.cur_tetromino.rotation)
 
@@ -204,7 +206,13 @@ class Model:
                 self.__held_tetromino = temp
             self.__can_be_held = False
 
+    def set_high_score(self) -> None:
+        if self.score > self.high_score:
+            self.__high_score = self.score
+            open('tetris/model/highscore.txt', 'w').write(str(self.score))
+
     def reset(self) -> None:
+        self.set_high_score()
         self.__init__()
 
     @property
