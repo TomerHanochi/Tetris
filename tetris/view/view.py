@@ -69,9 +69,7 @@ class View:
         self.layers[0].extend([next_, held, stats, board, reset_button])
 
     def update(self) -> None:
-        """
-        Clears the screen, then redraws everything
-        """
+        """Clears the screen, then redraws everything"""
         self.__window.fill(Colors.background)
 
         for layer in self.layers:

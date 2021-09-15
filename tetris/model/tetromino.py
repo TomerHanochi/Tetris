@@ -1,5 +1,3 @@
-from random import randint
-
 from tetris.model.block import Block
 from tetris.consts import Consts
 
