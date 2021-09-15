@@ -21,9 +21,18 @@ class Held(ViewObject):
 
         held = self.model.held_tetromino
         if held is not None:
-            Draw.tetromino(x=self.x + (self.w - held.width) * Consts.BLOCK_SIZE * .5,
-                           y=self.y + (self.h - held.height) * Consts.BLOCK_SIZE * .5,
-                           rotation=held.rotation, name=held.name)
+            rotation = Consts.ROTATIONS[held][0]
+            xs, ys = set(), set()
+            for (x, y) in rotation:
+                xs.add(x)
+                ys.add(y)
+            # the width is the difference between the right and left blocks
+            width = max(xs) - min(xs) + 1
+            # the height is the difference between the bottom and top blocks
+            height = max(ys) - min(ys) + 1
+            Draw.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
+                           y=self.y + (self.h - height) * Consts.BLOCK_SIZE * .5,
+                           rotation=rotation, name=held)
 
     @property
     def x(self) -> float:

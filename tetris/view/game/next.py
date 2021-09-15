@@ -20,9 +20,13 @@ class Next(ViewObject):
                    image=self.title)
 
         for j, tetromino in enumerate(self.model.next):
-            Draw.tetromino(x=self.x + (self.w - tetromino.width) * Consts.BLOCK_SIZE * .5,
+            rotation = Consts.ROTATIONS[tetromino][0]
+            xs = {x for (x, y) in rotation}
+            # the width is the difference between the right and left blocks
+            width = max(xs) - min(xs) + 1
+            Draw.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
                            y=self.y + ((j + 1) * 3 - 1) * Consts.BLOCK_SIZE,
-                           rotation=tetromino.rotation, name=tetromino.name)
+                           rotation=rotation, name=tetromino)
 
     @property
     def x(self) -> float:

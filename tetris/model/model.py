@@ -2,7 +2,6 @@ from tetris.consts import Consts
 from tetris.model.block import Block
 from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
-from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Model:
@@ -16,8 +15,8 @@ class Model:
     """
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
-        self.__cur_tetromino = self.__tetromino_set.remove()
-        self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, blocks=[])
+        self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
+        # self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, blocks=[])
         self.__blocks = []
         # a property where the held tetromino can be stored
         self.__held_tetromino = None
@@ -67,12 +66,15 @@ class Model:
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
                 # the current tetrominoes blocks are appended to the all blocks list
+                for block in self.cur_tetromino.blocks:
+                    block.i += self.cur_tetromino.x
+                    block.j += self.cur_tetromino.y
                 self.__blocks.extend(self.cur_tetromino.blocks)
 
                 self.clear_rows()
 
                 # replace tetromino
-                self.__cur_tetromino = self.__tetromino_set.remove()
+                self.__cur_tetromino.__init__(self.__tetromino_set.remove())
                 # reset held 'cooldown'
                 self.__can_be_held = True
 
@@ -160,15 +162,20 @@ class Model:
                                    reverse=True)
             # all floating blocks split by the rows they're in
             floating_blocks = [
-                [block for block in self.blocks if block.j == floating_row_index]
-                for floating_row_index in floating_rows
+                [block for block in self.blocks if block.j == floating_row_j]
+                for floating_row_j in floating_rows
             ]
             for row in floating_blocks:
+                other_blocks = {block for block in self.blocks if block not in row}
+                # there is no need to check that all blocks are out of bounds,
+                # as they are in the same y index
+                first_block = row[0]
                 # as long as none of the blocks in the current row can't move down, move down
-                while all(not block.collide_down(other) for block in row for other in self.blocks
-                          if other is not block) and all(block.can_move_down for block in row):
+                while (not any(block.j + 1 == other.j and block.i == other.i
+                               for block in row for other in other_blocks)
+                       and first_block.j + 1 < Consts.GRID_HEIGHT):
                     for block in row:
-                        block.move_down()
+                        block.j += 1
 
         # the number of lines cleared (max of 4)
         cleared = len(clearable)
@@ -182,14 +189,14 @@ class Model:
         if self.__can_be_held:
             if self.held_tetromino is None:
                 # create a copy of the current tetromino
-                self.__held_tetromino = Tetromino(self.cur_tetromino.name)
+                self.__held_tetromino = self.cur_tetromino.name
                 # switch the current one to a new one from the set
-                self.__cur_tetromino = self.__tetromino_set.remove()
+                self.__cur_tetromino.__init__(self.__tetromino_set.remove())
             else:
                 # switch the held and current tetrominoes
-                temp = self.__cur_tetromino
-                self.__cur_tetromino = Tetromino(self.__held_tetromino.name)
-                self.__held_tetromino = Tetromino(temp.name)
+                temp = self.__cur_tetromino.name
+                self.__cur_tetromino.__init__(self.__held_tetromino)
+                self.__held_tetromino = temp
             self.__can_be_held = False
 
     def reset(self) -> None:
@@ -201,7 +208,7 @@ class Model:
         return any(block.j <= 0 for block in self.blocks)
 
     @property
-    def next(self) -> list[Tetromino]:
+    def next(self) -> list[str]:
         # get a list of the next Const.NEXT_SET_SIZE next tetrominoes
         return self.__tetromino_set.get_next()
 
@@ -210,13 +217,8 @@ class Model:
         return self.__cur_tetromino
 
     @property
-    def held_tetromino(self) -> Tetromino:
+    def held_tetromino(self) -> str:
         return self.__held_tetromino
-
-    @property
-    def ghost_tetromino(self) -> GhostTetromino:
-        self.__ghost_tetromino.update(self.cur_tetromino, self.blocks)
-        return self.__ghost_tetromino
 
     @property
     def blocks(self) -> list[Block]:

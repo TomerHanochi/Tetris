@@ -20,78 +20,88 @@ class Tetromino:
         # the default y position is just above the board, by default
         self.__y = Consts.Y_OFFSET
         self.blocks = [
-            Block(name, self.__x + i, self.__y + j) for (i, j) in self.rotation
+            Block(name, i, j) for (i, j) in self.rotation
         ]
 
-    def illegal_position(self, blocks) -> bool:
-        """Checks whether the current rotation is out of bounds or overlaps with existing blocks"""
-        return (self.leftmost.i < 0 or self.rightmost.i >= Consts.GRID_WIDTH or
-                any(block.overlap(other) for other in blocks for block in self.blocks))
+    @property
+    def out_of_bounds_down(self) -> bool:
+        return self.y + self.bottommost + 1 >= Consts.GRID_HEIGHT
 
-    def rotate_right(self, blocks) -> None:
+    @property
+    def out_of_bounds(self) -> bool:
+        return self.x + self.leftmost < 0 or self.x + self.rightmost >= Consts.GRID_WIDTH
+
+    def overlap(self, blocks: list[Block]) -> bool:
+        return any(self.x + block.i == other.i and self.y + block.j == other.j
+                   for other in blocks for block in self.blocks)
+
+    def rotate_right(self, blocks: list[Block]) -> None:
         """Rotates the piece right, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation + 1) % len(self.__rotations)
         for block, (i, j) in zip(self.blocks, self.rotation):
-            block.i = self.__x + i
-            block.j = self.__y + j
-        if self.illegal_position(blocks):
+            block.i = i
+            block.j = j
+        if self.out_of_bounds or self.overlap(blocks):
             self.rotate_left(blocks)
 
-    def rotate_left(self, blocks) -> None:
+    def rotate_left(self, blocks: list[Block]) -> None:
         """Rotates the piece left, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation - 1) % len(self.__rotations)
         for block, (i, j) in zip(self.blocks, self.rotation):
-            block.i = self.__x + i
-            block.j = self.__y + j
-        if self.illegal_position(blocks):
+            block.i = i
+            block.j = j
+        if self.out_of_bounds or self.overlap(blocks):
             self.rotate_right(blocks)
 
-    def can_move_right(self, blocks) -> bool:
-        return (self.rightmost.can_move_right and
-                all(not block.collide_right(other) for other in blocks for block in self.blocks))
+    def collide_right(self, blocks: list[Block]) -> bool:
+        return any(self.x + block.i == other.i - 1 and self.y + block.j == other.j
+                   for other in blocks for block in self.blocks)
+
+    def can_move_right(self, blocks: list[Block]) -> bool:
+        return self.x + self.rightmost < Consts.GRID_WIDTH - 1 and not self.collide_right(blocks)
 
     def move_right(self) -> None:
         self.__x += 1
-        for block in self.blocks:
-            block.move_right()
 
-    def can_move_left(self, blocks) -> bool:
-        return (self.leftmost.can_move_left and
-                all(not block.collide_left(other) for other in blocks for block in self.blocks))
+    def collide_left(self, blocks: list[Block]) -> bool:
+        return any(self.x + block.i == other.i + 1 and self.y + block.j == other.j
+                   for other in blocks for block in self.blocks)
+
+    def can_move_left(self, blocks: list[Block]) -> bool:
+        return self.x + self.leftmost > 0 and not self.collide_left(blocks)
 
     def move_left(self) -> None:
         self.__x -= 1
-        for block in self.blocks:
-            block.move_left()
 
-    def can_move_down(self, blocks) -> bool:
-        return (all(block.can_move_down for block in self.blocks) and
-                all(not block.collide_down(other) for other in blocks for block in self.blocks))
+    def collide_down(self, blocks: list[Block]) -> bool:
+        return any(self.y + block.j == other.j - 1 and self.x + block.i == other.i
+                   for other in blocks for block in self.blocks)
+
+    def can_move_down(self, blocks: list[Block]) -> bool:
+        return not self.out_of_bounds_down and not self.collide_down(blocks)
 
     def move_down(self) -> None:
         self.__y += 1
-        for block in self.blocks:
-            block.move_down()
 
     @property
-    def rightmost(self) -> Block:
+    def rightmost(self) -> int:
         """Returns the rightmost index in the current rotation"""
-        return max(self.blocks, key=lambda block: block.i)
+        return max((block.i for block in self.blocks))
 
     @property
-    def leftmost(self) -> Block:
+    def leftmost(self) -> int:
         """Returns the leftmost index in the current rotation"""
-        return min(self.blocks, key=lambda block: block.i)
+        return min((block.i for block in self.blocks))
 
     @property
-    def topmost(self) -> Block:
+    def topmost(self) -> int:
         """Returns the topmost index in the current rotation"""
-        return min(self.blocks, key=lambda block: block.j)
+        return min((block.j for block in self.blocks))
 
     @property
-    def bottommost(self) -> Block:
+    def bottommost(self) -> int:
         """Returns the bottommost index in the current rotation"""
-        return max(self.blocks, key=lambda block: block.j)
+        return max((block.j for block in self.blocks))
 
     @property
     def rotation(self) -> list[tuple[int, int]]:
@@ -108,11 +118,11 @@ class Tetromino:
 
     @property
     def width(self) -> int:
-        return abs(self.x - self.rightmost.i) + 1
+        return abs(self.leftmost - self.rightmost) + 1
 
     @property
     def height(self) -> int:
-        return abs(self.y - self.bottommost.j) + 1
+        return abs(self.topmost - self.bottommost) + 1
 
     @property
     def name(self) -> str:

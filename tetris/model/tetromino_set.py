@@ -1,6 +1,5 @@
 from random import shuffle
 
-from tetris.model.tetromino import Tetromino
 from tetris.consts import Consts
 
 
@@ -15,17 +14,17 @@ class TetrominoSet:
         self.__set = []
         self.generate_new_tetrominoes()
 
-    def remove(self) -> Tetromino:
+    def remove(self) -> str:
         """Returns the first tetromino in the set"""
         return self.__set.pop(0)
 
     def generate_new_tetrominoes(self) -> None:
         """Adds 7 more tetrominoes according to algorithm mentioned in the __init__"""
-        new_set = [Tetromino(name) for name in Consts.TETROMINO_NAMES]
+        new_set = [name for name in Consts.TETROMINO_NAMES]
         shuffle(new_set)
         self.__set.extend(new_set)
 
-    def get_next(self) -> list[Tetromino]:
+    def get_next(self) -> list[str]:
         """Returns the next Consts.NEXT_SET_SIZE tetrominoes"""
         return self.__set[:Consts.NEXT_SET_SIZE]
 
