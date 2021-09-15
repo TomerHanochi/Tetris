@@ -1,4 +1,4 @@
-from tetris.assets.assets import Images
+from tetris.assets.assets import Images, Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.draw import Draw
 from tetris.model.model import Model
@@ -12,6 +12,11 @@ class Board(ViewObject):
         self.__model = model
 
     def draw(self) -> None:
+        title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
+        Draw.image(x=self.x,
+                   y=self.y - title.get_height() * 1.25,
+                   image=title)
+
         Draw.border(self.x, self.y, self.w, self.h)
 
         tetromino = self.model.ghost_tetromino

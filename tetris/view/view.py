@@ -30,12 +30,6 @@ class View:
         self.setup_game()
         Sounds.music.play(loops=-1)
 
-    def draw_title(self) -> None:
-        title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
-        title_x = (Consts.SCREEN_WIDTH - title.get_width()) * .5
-        title_y = (Consts.SCREEN_HEIGHT - Consts.GRID_HEIGHT * Consts.BLOCK_SIZE) * .5 - title.get_height() * 1.25
-        Draw.image(title_x, title_y, title)
-
     def click(self) -> None:
         for layer in reversed(self.layers):
             for view_object in layer:
@@ -75,8 +69,6 @@ class View:
         for layer in self.layers:
             for view_object in layer:
                 view_object.draw()
-
-        self.draw_title()
 
         pg.display.flip()
 
