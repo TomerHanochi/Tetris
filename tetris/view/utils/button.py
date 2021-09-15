@@ -26,6 +26,7 @@ class Button(ViewObject):
         self.func(*args)
 
     def draw(self) -> None:
+        # the offset is to make sure the background is bigger than the text
         offset = 0.05
         Draw.fill(x=self.__x - self.__w * offset, y=self.__y - self.__h * offset,
                   w=self.__w * (1 + offset * 2), h=self.__h * (1 + offset * 2),

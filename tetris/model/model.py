@@ -211,7 +211,7 @@ class Model:
 
     @property
     def next(self) -> list[str]:
-        # get a list of the next Const.NEXT_SET_SIZE next tetrominoes
+        # get a list of the next Const.NEXT_SET_SIZE tetromino names
         return self.__tetromino_set.get_next()
 
     @property
