@@ -2,6 +2,7 @@ from tetris.consts import Consts
 from tetris.model.block import Block
 from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
+from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Model:
@@ -16,7 +17,8 @@ class Model:
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
-        # self.__ghost_tetromino = GhostTetromino(self.cur_tetromino, blocks=[])
+        self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, blocks=[],
+                                                rotation=self.cur_tetromino.rotation)
         self.__blocks = []
         # a property where the held tetromino can be stored
         self.__held_tetromino = None
@@ -215,6 +217,12 @@ class Model:
     @property
     def cur_tetromino(self) -> Tetromino:
         return self.__cur_tetromino
+
+    @property
+    def ghost_tetromino(self) -> GhostTetromino:
+        self.__ghost_tetromino.update(x=self.cur_tetromino.x, blocks=[],
+                                      rotation=self.cur_tetromino.rotation)
+        return self.__ghost_tetromino
 
     @property
     def held_tetromino(self) -> str:

@@ -19,13 +19,9 @@ class Tetromino:
         self.__x = randint(a, b)
         # the default y position is just above the board, by default
         self.__y = Consts.Y_OFFSET
-        self.blocks = [
+        self.__blocks = [
             Block(name, i, j) for (i, j) in self.rotation
         ]
-
-    @property
-    def out_of_bounds_down(self) -> bool:
-        return self.y + self.bottommost + 1 >= Consts.GRID_HEIGHT
 
     @property
     def out_of_bounds(self) -> bool:
@@ -78,7 +74,7 @@ class Tetromino:
                    for other in blocks for block in self.blocks)
 
     def can_move_down(self, blocks: list[Block]) -> bool:
-        return not self.out_of_bounds_down and not self.collide_down(blocks)
+        return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(blocks)
 
     def move_down(self) -> None:
         self.__y += 1
@@ -127,3 +123,7 @@ class Tetromino:
     @property
     def name(self) -> str:
         return self.__name
+
+    @property
+    def blocks(self) -> list[Block]:
+        return self.__blocks

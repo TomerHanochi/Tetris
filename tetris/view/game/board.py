@@ -14,7 +14,10 @@ class Board(ViewObject):
     def draw(self) -> None:
         Draw.border(self.x, self.y, self.w, self.h)
 
-        # TODO Draw ghost tetromino
+        tetromino = self.model.ghost_tetromino
+        Draw.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
+                       y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
+                       rotation=tetromino.rotation, name='ghost')
 
         # draws current tetromino
         tetromino = self.model.cur_tetromino
