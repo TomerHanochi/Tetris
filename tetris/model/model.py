@@ -41,6 +41,9 @@ class Model:
 
     def update(self) -> None:
         if not self.terminal:
+            self.__ghost_tetromino.update(x=self.cur_tetromino.x, blocks=self.blocks,
+                                          rotation=self.cur_tetromino.rotation)
+
             if self.__should_move_right and self.can_move_right:
                 self.move_right()
             elif self.__move_right_cooldown > 0:
@@ -206,12 +209,12 @@ class Model:
 
     @property
     def terminal(self) -> bool:
-        # whether the game has ended
+        """whether the game has ended"""
         return any(block.j <= 0 for block in self.blocks)
 
     @property
     def next(self) -> list[str]:
-        # get a list of the next Const.NEXT_SET_SIZE tetromino names
+        """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
         return self.__tetromino_set.get_next()
 
     @property
@@ -220,8 +223,6 @@ class Model:
 
     @property
     def ghost_tetromino(self) -> GhostTetromino:
-        self.__ghost_tetromino.update(x=self.cur_tetromino.x, blocks=[],
-                                      rotation=self.cur_tetromino.rotation)
         return self.__ghost_tetromino
 
     @property
