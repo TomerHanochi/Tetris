@@ -24,21 +24,22 @@ class Controller:
             pg.quit()
             sys.exit()
         elif event.type == pg.KEYDOWN:
-            if event.key == pg.K_RIGHT:
-                self.__model.start_move_right()
-            elif event.key == pg.K_LEFT:
-                self.__model.start_move_left()
-            elif event.key == pg.K_UP or event.key == pg.K_x:
-                self.__model.rotate_right()
-            elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
-                self.__model.rotate_left()
-            elif event.key == pg.K_DOWN:
-                self.__model.start_soft_drop()
-            elif event.key == pg.K_SPACE:
-                self.__model.hard_drop()
-            elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
-                self.__model.hold()
-            elif event.key == pg.K_ESCAPE:
+            if not self.__model.paused and self.__model.pause_cooldown == 0:
+                if event.key == pg.K_RIGHT:
+                    self.__model.start_move_right()
+                elif event.key == pg.K_LEFT:
+                    self.__model.start_move_left()
+                elif event.key == pg.K_UP or event.key == pg.K_x:
+                    self.__model.rotate_right()
+                elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
+                    self.__model.rotate_left()
+                elif event.key == pg.K_DOWN:
+                    self.__model.start_soft_drop()
+                elif event.key == pg.K_SPACE:
+                    self.__model.hard_drop()
+                elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
+                    self.__model.hold()
+            if event.key == pg.K_ESCAPE:
                 self.__model.pause_or_resume()
         elif event.type == pg.KEYUP:
             if event.key == pg.K_RIGHT:
