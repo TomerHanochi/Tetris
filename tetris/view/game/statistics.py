@@ -9,8 +9,7 @@ class Stats(ViewObject):
     def __init__(self, x: float, y: float, model: Model) -> None:
         # the stat name has to match the name of the attribute in the model
         self.stats = {
-            stat: Fonts.statistic.render(stat.upper().replace('_', ' '), True,
-                                         Colors.statistic, Colors.background)
+            stat: Fonts.statistic.render(stat.upper().replace('_', ' '), True, Colors.statistic)
             for stat in ('high_score', 'score', 'level', 'cleared')
         }
         # sets the widest rendered stat as the width of the stats object
@@ -30,7 +29,7 @@ class Stats(ViewObject):
                        y=statistic_y, image=rendered_stat)
 
             stat_value = Fonts.statistic.render(str(getattr(self.model, stat_name)), True,
-                                                Colors.statistic, Colors.background)
+                                                Colors.statistic)
             # offset each stat value so that it is easier to read
             statistic_y += stat_value.get_height() * 1.25
             Draw.image(self.x + (self.w - stat_value.get_width()) * .5, statistic_y, stat_value)

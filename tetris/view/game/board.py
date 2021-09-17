@@ -10,7 +10,7 @@ class Board(ViewObject):
         self.__x = x
         self.__y = y
         self.__model = model
-        self.title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
+        self.title = Fonts.title.render('TETRIS', True, Colors.title)
 
     def draw(self) -> None:
         # Draws the pre rendered tetris title

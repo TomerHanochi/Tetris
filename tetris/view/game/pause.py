@@ -10,15 +10,17 @@ class Pause(ViewObject):
         self.__x = Consts.SCREEN_WIDTH * .5
         self.__y = Consts.SCREEN_HEIGHT * .5
         self.__model = model
+        self.title = Fonts.title.render(f'PAUSE', True, Colors.title)
+
 
     def draw(self) -> None:
         if self.model.paused:
-            image = Fonts.title.render(f'PAUSE', True, Colors.title, Colors.background)
-            Draw.image(x=self.__x - image.get_width() * .5, y=self.__y - image.get_height() * .5,
-                       image=image)
+            Draw.image(x=self.__x - self.title.get_width() * .5,
+                       y=self.__y - self.title.get_height() * .5,
+                       image=self.title)
         elif self.model.pause_cooldown != 0:
             image = Fonts.title.render(f'{self.model.pause_cooldown // Consts.FRAME_RATE + 1}',
-                                       True, Colors.title, Colors.background)
+                                       True, Colors.title)
             Draw.image(x=self.__x - image.get_width() * .5, y=self.__y - image.get_height() * .5,
                        image=image)
 

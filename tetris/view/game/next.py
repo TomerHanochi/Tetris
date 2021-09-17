@@ -10,7 +10,7 @@ class Next(ViewObject):
         self.__x = (x - self.w * Consts.BLOCK_SIZE) * .5
         self.__y = y
         self.__model = model
-        self.title = Fonts.sub_title.render('NEXT', True, Colors.sub_title, Colors.background)
+        self.title = Fonts.sub_title.render('NEXT', True, Colors.sub_title)
 
     def draw(self) -> None:
         Draw.border(self.x, self.y, self.w, self.h)
