@@ -1,5 +1,3 @@
-import sys
-
 import pygame as pg
 
 from tetris.model.model import Model
@@ -22,7 +20,7 @@ class Controller:
             # update the high score and quit
             self.__model.set_high_score()
             pg.quit()
-            sys.exit()
+            exit()
         elif event.type == pg.KEYDOWN:
             if not self.__model.paused and self.__model.pause_cooldown == 0:
                 if event.key == pg.K_RIGHT:
