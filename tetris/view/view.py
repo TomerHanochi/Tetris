@@ -1,8 +1,7 @@
 import pygame as pg
 
-from tetris.assets.assets import Colors, Fonts, Sounds
+from tetris.assets.assets import Colors, Sounds
 from tetris.view.utils.view_object import ViewObject
-from tetris.view.utils.draw import Draw
 from tetris.view.utils.button import Button
 from tetris.view.game.board import Board
 from tetris.view.game.held import Held

@@ -1,5 +1,5 @@
 from tetris.consts import Consts
-from tetris.model.block import Block
+from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
 from tetris.model.ghost_tetromino import GhostTetromino
@@ -17,9 +17,9 @@ class Model:
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
-        self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, blocks=[],
+        self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x,
                                                 rotation=self.cur_tetromino.rotation)
-        self.__blocks = []
+        self.__board = Board()
         # a property where the held tetromino can be stored
         self.__held_tetromino = None
         # a tetromino can be held only once per 'turn'
@@ -43,8 +43,9 @@ class Model:
         if self.terminal:
             self.set_high_score()
         else:
-            self.__ghost_tetromino.update(x=self.cur_tetromino.x, blocks=self.blocks,
+            self.__ghost_tetromino.update(x=self.cur_tetromino.x,
                                           rotation=self.cur_tetromino.rotation)
+            self.board.hard_drop(self.__ghost_tetromino)
 
             if self.__should_move_right and self.can_move_right:
                 self.move_right()
@@ -73,12 +74,9 @@ class Model:
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
                 # the current tetrominoes blocks are appended to the all blocks list
-                for block in self.cur_tetromino.blocks:
-                    block.i += self.cur_tetromino.x
-                    block.j += self.cur_tetromino.y
-                self.__blocks.extend(self.cur_tetromino.blocks)
+                self.board.add_piece(self.cur_tetromino)
 
-                self.clear_rows()
+                # self.clear_rows()
 
                 # replace tetromino
                 self.__cur_tetromino.__init__(self.__tetromino_set.remove())
@@ -87,7 +85,8 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return self.cur_tetromino.can_move_right(self.blocks) and self.__move_right_cooldown == 0
+        return (self.cur_tetromino.can_move_right(self.board.cells) and
+                self.__move_right_cooldown == 0)
 
     def start_move_right(self) -> None:
         self.__should_move_right = True
@@ -101,7 +100,8 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return self.cur_tetromino.can_move_left(self.blocks) and self.__move_left_cooldown == 0
+        return (self.cur_tetromino.can_move_left(self.board.cells) and
+                self.__move_left_cooldown == 0)
 
     def start_move_left(self) -> None:
         self.__should_move_left = True
@@ -115,7 +115,7 @@ class Model:
 
     @property
     def can_move_down(self) -> bool:
-        return self.cur_tetromino.can_move_down(self.blocks)
+        return self.cur_tetromino.can_move_down(self.board.cells)
 
     def move_down(self) -> None:
         if self.__move_down_cooldown == 0:
@@ -123,14 +123,15 @@ class Model:
             self.__move_down_cooldown = Consts.COOLDOWN_BY_LEVEL[self.level]
 
     def rotate_right(self) -> None:
-        self.cur_tetromino.rotate_right(self.blocks)
+        self.cur_tetromino.rotate_right(self.board.cells)
 
     def rotate_left(self) -> None:
-        self.cur_tetromino.rotate_left(self.blocks)
+        self.cur_tetromino.rotate_left(self.board.cells)
 
     @property
     def can_soft_drop(self) -> bool:
-        return self.cur_tetromino.can_move_down(self.blocks) and self.__soft_drop_cooldown == 0
+        return (self.cur_tetromino.can_move_down(self.board.cells) and
+                self.__soft_drop_cooldown == 0)
 
     def start_soft_drop(self) -> None:
         self.__should_soft_drop = True
@@ -145,14 +146,11 @@ class Model:
         self.__should_soft_drop = False
 
     def hard_drop(self) -> None:
-        while self.cur_tetromino.can_move_down(self.blocks):
-            self.cur_tetromino.move_down()
-            # award points for each cell dropped in hard drop
-            self.__score += Consts.HARD_DROP_MULT
+        self.__score += self.board.hard_drop(self.cur_tetromino) * Consts.HARD_DROP_MULT
 
     def clear_rows(self) -> None:
         # list of indecies of the row of each block
-        all_rows = [block.j for block in self.blocks]
+        all_rows = [j for col in self.board.cells for j, cell in enumerate(col) if cell is not None]
         # a set of indecies of rows that are full
         clearable = {row for row in all_rows if all_rows.count(row) == Consts.GRID_WIDTH}
         if clearable:
@@ -218,7 +216,7 @@ class Model:
     @property
     def terminal(self) -> bool:
         """whether the game has ended"""
-        return any(block.j <= 0 for block in self.blocks)
+        return False
 
     @property
     def next(self) -> list[str]:
@@ -238,8 +236,8 @@ class Model:
         return self.__held_tetromino
 
     @property
-    def blocks(self) -> list[Block]:
-        return self.__blocks
+    def board(self) -> Board:
+        return self.__board
 
     @property
     def cleared(self) -> int:

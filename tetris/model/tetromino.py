@@ -1,4 +1,3 @@
-from tetris.model.block import Block
 from tetris.consts import Consts
 
 
@@ -14,62 +13,50 @@ class Tetromino:
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         self.__x, self.__y = Consts.STARTING_POSITION
-        self.__blocks = [
-            Block(name, i, j) for (i, j) in self.rotation
-        ]
+        self.__y = 0
 
     @property
     def out_of_bounds(self) -> bool:
         return self.x + self.leftmost < 0 or self.x + self.rightmost >= Consts.GRID_WIDTH
 
-    def overlap(self, blocks: list[Block]) -> bool:
-        return any(self.x + block.i == other.i and self.y + block.j == other.j
-                   for other in blocks for block in self.blocks)
+    def overlap(self, cells: list[list[str or None]]) -> bool:
+        return any(cells[self.x + i][self.y + j] is not None for (i, j) in self.rotation)
 
-    def rotate_right(self, blocks: list[Block]) -> None:
+    def rotate_right(self, cells: list[list[str or None]]) -> None:
         """Rotates the piece right, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation + 1) % len(self.__rotations)
-        for block, (i, j) in zip(self.blocks, self.rotation):
-            block.i = i
-            block.j = j
-        if self.out_of_bounds or self.overlap(blocks):
-            self.rotate_left(blocks)
+        if self.out_of_bounds or self.overlap(cells):
+            self.rotate_left(cells)
 
-    def rotate_left(self, blocks: list[Block]) -> None:
+    def rotate_left(self, cells: list[list[str or None]]) -> None:
         """Rotates the piece left, if rotation is illegal rotates it back"""
         self.__rotation = (self.__rotation - 1) % len(self.__rotations)
-        for block, (i, j) in zip(self.blocks, self.rotation):
-            block.i = i
-            block.j = j
-        if self.out_of_bounds or self.overlap(blocks):
-            self.rotate_right(blocks)
+        if self.out_of_bounds or self.overlap(cells):
+            self.rotate_right(cells)
 
-    def collide_right(self, blocks: list[Block]) -> bool:
-        return any(self.x + block.i == other.i - 1 and self.y + block.j == other.j
-                   for other in blocks for block in self.blocks)
+    def collide_right(self, cells: list[list[str or None]]) -> bool:
+        return any(cells[self.x + i + 1][self.y + j] is not None for (i, j) in self.rotation)
 
-    def can_move_right(self, blocks: list[Block]) -> bool:
-        return self.x + self.rightmost < Consts.GRID_WIDTH - 1 and not self.collide_right(blocks)
+    def can_move_right(self, cells: list[list[str or None]]) -> bool:
+        return self.x + self.rightmost < Consts.GRID_WIDTH - 1 and not self.collide_right(cells)
 
     def move_right(self) -> None:
         self.__x += 1
 
-    def collide_left(self, blocks: list[Block]) -> bool:
-        return any(self.x + block.i == other.i + 1 and self.y + block.j == other.j
-                   for other in blocks for block in self.blocks)
+    def collide_left(self, cells: list[list[str or None]]) -> bool:
+        return any(cells[self.x + i - 1][self.y + j] is not None for (i, j) in self.rotation)
 
-    def can_move_left(self, blocks: list[Block]) -> bool:
-        return self.x + self.leftmost > 0 and not self.collide_left(blocks)
+    def can_move_left(self, cells: list[list[str or None]]) -> bool:
+        return self.x + self.leftmost > 0 and not self.collide_left(cells)
 
     def move_left(self) -> None:
         self.__x -= 1
 
-    def collide_down(self, blocks: list[Block]) -> bool:
-        return any(self.y + block.j == other.j - 1 and self.x + block.i == other.i
-                   for other in blocks for block in self.blocks)
+    def collide_down(self, cells: list[list[str or None]]) -> bool:
+        return any(cells[self.x + i][self.y + j + 1] is not None for (i, j) in self.rotation)
 
-    def can_move_down(self, blocks: list[Block]) -> bool:
-        return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(blocks)
+    def can_move_down(self, cells: list[list[str or None]]) -> bool:
+        return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(cells)
 
     def move_down(self) -> None:
         self.__y += 1
@@ -77,22 +64,22 @@ class Tetromino:
     @property
     def rightmost(self) -> int:
         """Returns the rightmost index in the current rotation"""
-        return max((block.i for block in self.blocks))
+        return max(i for (i, j) in self.rotation)
 
     @property
     def leftmost(self) -> int:
         """Returns the leftmost index in the current rotation"""
-        return min((block.i for block in self.blocks))
+        return min(i for (i, j) in self.rotation)
 
     @property
     def topmost(self) -> int:
         """Returns the topmost index in the current rotation"""
-        return min((block.j for block in self.blocks))
+        return min(j for (i, j) in self.rotation)
 
     @property
     def bottommost(self) -> int:
         """Returns the bottommost index in the current rotation"""
-        return max((block.j for block in self.blocks))
+        return max(j for (i, j) in self.rotation)
 
     @property
     def rotation(self) -> list[tuple[int, int]]:
@@ -118,7 +105,3 @@ class Tetromino:
     @property
     def name(self) -> str:
         return self.__name
-
-    @property
-    def blocks(self) -> list[Block]:
-        return self.__blocks
