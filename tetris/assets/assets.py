@@ -45,6 +45,7 @@ class Colors(metaclass=AssetsType):
         'title': (255, 255, 255),
         'sub_title': (255, 255, 255),
         'statistic': (255, 255, 255),
+        'button_background': (0, 0, 0),
         'button_text': (255, 255, 255),
     }
 
