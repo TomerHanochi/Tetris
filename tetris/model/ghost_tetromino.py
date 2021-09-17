@@ -2,9 +2,9 @@ from tetris.consts import Consts
 
 
 class GhostTetromino:
-    def __init__(self, x: int, rotation: list[tuple[int, int]]) -> None:
+    def __init__(self, x: int, y: int, rotation: list[tuple[int, int]]) -> None:
         self.__x = x
-        self.__y = 0
+        self.__y = y if y > 0 else 0
         self.__rotation = rotation
 
     def collide_down(self, cells: list[list[str or None]]) -> bool:
@@ -16,11 +16,6 @@ class GhostTetromino:
 
     def move_down(self) -> None:
         self.__y += 1
-
-    def update(self, x: int, rotation: list[tuple[int, int]]):
-        self.__x = x
-        self.__y = 0
-        self.__rotation = rotation
 
     @property
     def x(self) -> int:

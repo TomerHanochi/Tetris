@@ -17,7 +17,7 @@ class Model:
     def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
-        self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x,
+        self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
                                                 rotation=self.cur_tetromino.rotation)
         self.__board = Board()
         # a property where the held tetromino can be stored
@@ -43,8 +43,8 @@ class Model:
         if self.terminal:
             self.set_high_score()
         else:
-            self.__ghost_tetromino.update(x=self.cur_tetromino.x,
-                                          rotation=self.cur_tetromino.rotation)
+            self.__ghost_tetromino.__init__(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
+                                            rotation=self.cur_tetromino.rotation)
             self.board.hard_drop(self.__ghost_tetromino)
 
             if self.__should_move_right and self.can_move_right:
@@ -76,7 +76,11 @@ class Model:
                 # the current tetrominoes blocks are appended to the all blocks list
                 self.board.add_piece(self.cur_tetromino)
 
-                # self.clear_rows()
+                cleared = self.board.clear_rows()
+                if cleared:
+                    self.__rows_cleared += cleared
+                    # increase the score according to the row clear multiplier
+                    self.__score += Consts.ROW_CLEAR_MULT[cleared - 1] * (self.level + 1)
 
                 # replace tetromino
                 self.__cur_tetromino.__init__(self.__tetromino_set.remove())
@@ -147,48 +151,6 @@ class Model:
 
     def hard_drop(self) -> None:
         self.__score += self.board.hard_drop(self.cur_tetromino) * Consts.HARD_DROP_MULT
-
-    def clear_rows(self) -> None:
-        # list of indecies of the row of each block
-        all_rows = [j for col in self.board.cells for j, cell in enumerate(col) if cell is not None]
-        # a set of indecies of rows that are full
-        clearable = {row for row in all_rows if all_rows.count(row) == Consts.GRID_WIDTH}
-        if clearable:
-            # a set of all blocks that are removable
-            removable = {block for block in self.blocks if block.j in clearable}
-            for block in removable:
-                self.blocks.remove(block)
-                del block
-
-            # the lowest cleared row
-            lowest_row_index = max(clearable)
-            # indecies of rows above the lowest cleared row, sorted from the bottom to top
-            floating_rows = sorted({block.j for block in self.blocks if block.j < lowest_row_index},
-                                   reverse=True)
-            # all floating blocks split by the rows they're in
-            floating_blocks = [
-                [block for block in self.blocks if block.j == floating_row_j]
-                for floating_row_j in floating_rows
-            ]
-            for row in floating_blocks:
-                other_blocks = {block for block in self.blocks if block not in row}
-                # there is no need to check that all blocks are out of bounds,
-                # as they are in the same y index
-                first_block = row[0]
-                # as long as none of the blocks in the current row can't move down, move down
-                while (not any(block.j + 1 == other.j and block.i == other.i
-                               for block in row for other in other_blocks)
-                       and first_block.j + 1 < Consts.GRID_HEIGHT):
-                    for block in row:
-                        block.j += 1
-
-        # the number of lines cleared (max of 4)
-        cleared = len(clearable)
-        # if there were cleared rows
-        if cleared:
-            self.__rows_cleared += cleared
-            # increase the score according to the row clear multiplier
-            self.__score += Consts.ROW_CLEAR_MULT[cleared - 1] * (self.level + 1)
 
     def hold(self) -> None:
         if self.__can_be_held:
