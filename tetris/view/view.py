@@ -7,6 +7,7 @@ from tetris.view.game.board import Board
 from tetris.view.game.held import Held
 from tetris.view.game.next import Next
 from tetris.view.game.statistics import Stats
+from tetris.view.game.pause import Pause
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -25,14 +26,15 @@ class View:
         # a clock to ensure the game runs at that constant fps
         self.__fps_clock = pg.time.Clock()
         # the stacking layers of the gui to choose what gets printed over what
-        self.__layers = [[], []]
+        self.__layers = []
         self.setup_game()
         Sounds.music.play(loops=-1)
 
     def click(self) -> None:
         for layer in reversed(self.layers):
             for view_object in layer:
-                if isinstance(view_object, Button) and view_object.is_clicked:
+                is_clicked = getattr(view_object, 'is_clicked', False)
+                if is_clicked:
                     view_object.click()
 
     def setup_game(self) -> None:
@@ -59,7 +61,12 @@ class View:
                       y=held.y + held.h * Consts.BLOCK_SIZE,
                       model=self.model)
 
-        self.layers[0].extend([next_, held, stats, board, reset_button])
+        pause = Pause(model=self.model)
+
+        self.__layers = [
+            [next_, held, stats, board, reset_button],
+            [pause]
+        ]
 
     def update(self) -> None:
         """Clears the screen, then redraws everything"""

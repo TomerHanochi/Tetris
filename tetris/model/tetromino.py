@@ -19,6 +19,7 @@ class Tetromino:
         return self.x + self.leftmost < 0 or self.x + self.rightmost >= Consts.GRID_WIDTH
 
     def overlap(self, cells: list[list[str or None]]) -> bool:
+        """Whether any block overlaps with any cell"""
         return (self.y >= 0 and
                 any(cells[self.y + j][self.x + i] is not None for (i, j) in self.rotation))
 
@@ -35,6 +36,7 @@ class Tetromino:
             self.rotate_right(cells)
 
     def collide_right(self, cells: list[list[str or None]]) -> bool:
+        """Whether any block collides with any cell to the right of it"""
         return (self.y >= 0 and
                 any(cells[self.y + j][self.x + i + 1] is not None for (i, j) in self.rotation))
 
@@ -45,6 +47,7 @@ class Tetromino:
         self.__x += 1
 
     def collide_left(self, cells: list[list[str or None]]) -> bool:
+        """Whether any block collides with any cell to the left of it"""
         return (self.y >= 0 and
                 any(cells[self.y + j][self.x + i - 1] is not None for (i, j) in self.rotation))
 
@@ -55,6 +58,7 @@ class Tetromino:
         self.__x -= 1
 
     def collide_down(self, cells: list[list[str or None]]) -> bool:
+        """Whether any block collides with any cell below it"""
         return (self.y >= 0 and
                 any(cells[self.y + j + 1][self.x + i] is not None for (i, j) in self.rotation))
 

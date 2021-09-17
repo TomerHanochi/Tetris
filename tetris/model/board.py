@@ -8,14 +8,26 @@ class Board:
         self.__cells = [[None for _ in range(Consts.GRID_WIDTH)] for _ in range(Consts.GRID_HEIGHT)]
 
     def add_piece(self, tetromino: Tetromino):
+        """Adds the blocks of a tetromino to the board"""
         for (i, j) in tetromino.rotation:
+            # the name is used so it is possible to get the tile image later
             self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
 
     def clear_row(self, j) -> None:
+        """
+        Replaces a row with an empty row
+        :param j: the index of the row to clear
+        """
         self.cells[j] = [None for _ in range(Consts.GRID_WIDTH)]
 
     def clear_rows(self) -> int:
+        """
+        Clears all filled rows
+        :return: number of rows cleared
+        """
+        # the rows that are full
         clearable = {j for j, row in enumerate(self.cells) if all(cell is not None for cell in row)}
+        # if clearable isn't empty
         if clearable:
             for j in clearable:
                 self.clear_row(j)
@@ -29,11 +41,13 @@ class Board:
                     first_row = j
                     break
             # all rows between them are floating
+            # move each row down until it can't
             for row in range(last_row, first_row - 1, -1):
                 for cur in range(row, Consts.GRID_HEIGHT - 1):
+                    # as long as the row below is empty, move down
                     if all(cell is None for cell in self.cells[cur + 1]):
                         self.cells[cur + 1] = self.cells[cur].copy()
-                        self.cells[cur] = [None for _ in range(Consts.GRID_WIDTH)]
+                        self.clear_row(cur)
                     else:
                         break
         return len(clearable)

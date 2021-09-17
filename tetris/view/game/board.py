@@ -10,15 +10,17 @@ class Board(ViewObject):
         self.__x = x
         self.__y = y
         self.__model = model
+        self.title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
 
     def draw(self) -> None:
-        title = Fonts.title.render('TETRIS', True, Colors.title, Colors.background)
+        # Draws the pre rendered tetris title
         Draw.image(x=self.x,
-                   y=self.y - title.get_height() * 1.25,
-                   image=title)
+                   y=self.y - self.title.get_height() * 1.25,
+                   image=self.title)
 
         Draw.border(self.x, self.y, self.w, self.h)
 
+        # draws the ghost tetromino
         tetromino = self.model.ghost_tetromino
         Draw.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
                        y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,

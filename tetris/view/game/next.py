@@ -15,10 +15,12 @@ class Next(ViewObject):
     def draw(self) -> None:
         Draw.border(self.x, self.y, self.w, self.h)
 
+        # Draws the pre rendered next title
         Draw.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
                    y=self.y - self.title.get_height() * 1.25,
                    image=self.title)
 
+        # for each held tetromino, draw it
         for j, tetromino in enumerate(self.model.next):
             rotation = Consts.ROTATIONS[tetromino][0]
             xs = {x for (x, y) in rotation}

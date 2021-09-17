@@ -38,6 +38,8 @@ class Controller:
                 self.__model.hard_drop()
             elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
                 self.__model.hold()
+            elif event.key == pg.K_ESCAPE:
+                self.__model.pause_or_resume()
         elif event.type == pg.KEYUP:
             if event.key == pg.K_RIGHT:
                 self.__model.stop_move_right()

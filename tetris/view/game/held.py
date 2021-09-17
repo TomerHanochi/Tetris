@@ -15,13 +15,16 @@ class Held(ViewObject):
     def draw(self) -> None:
         Draw.border(self.x, self.y, self.w, self.h)
 
+        # Draws the pre rendered held title
         Draw.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
                    y=self.y - self.title.get_height() * 1.25,
                    image=self.title)
 
+        # if there is a held tetromino, draw it
         held = self.model.held_tetromino
         if held is not None:
             rotation = Consts.ROTATIONS[held][0]
+            # the further calculations are used to center the tetromino
             xs, ys = set(), set()
             for (x, y) in rotation:
                 xs.add(x)

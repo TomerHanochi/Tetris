@@ -8,10 +8,11 @@ class GhostTetromino:
         self.__rotation = rotation
 
     def collide_down(self, cells: list[list[str or None]]) -> bool:
-        return (self.y >= 0 and
-                any(cells[self.y + j + 1][self.x + i] is not None for (i, j) in self.rotation))
+        """Any cell under any block is filled"""
+        return any(cells[self.y + j + 1][self.x + i] is not None for (i, j) in self.rotation)
 
     def can_move_down(self, cells: list[list[str or None]]) -> bool:
+        """Whether the block is out of bounds or collides with other blocks"""
         return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(cells)
 
     def move_down(self) -> None:

@@ -35,14 +35,21 @@ class Model:
         self.__soft_drop_cooldown = 0
         self.__move_down_cooldown = 0
 
+        # whether the game was paused
+        self.__paused = False
+        self.__pause_cooldown = 0
+
         self.__rows_cleared = 0
         self.__score = 0
         self.__high_score = int(open('tetris/model/highscore.txt', 'r').read())
 
     def update(self) -> None:
+        if self.__pause_cooldown > 0:
+            self.__pause_cooldown -= 1
+
         if self.terminal:
             self.set_high_score()
-        else:
+        elif not self.paused and self.pause_cooldown == 0:
             self.__ghost_tetromino.__init__(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
                                             rotation=self.cur_tetromino.rotation)
             self.board.hard_drop(self.__ghost_tetromino)
@@ -175,6 +182,13 @@ class Model:
         self.set_high_score()
         self.__init__()
 
+    def pause_or_resume(self) -> None:
+        """Pauses or resumes the game"""
+        self.__paused = not self.paused
+        if not self.paused:
+            # 3 extra seconds of pause
+            self.__pause_cooldown = Consts.FRAME_RATE * 3
+
     @property
     def terminal(self) -> bool:
         """whether the game has ended"""
@@ -218,3 +232,11 @@ class Model:
         # the level increases for every ten rows cleared and caps at 28
         level = int(self.cleared * .1)
         return level if level < 28 else 28
+
+    @property
+    def paused(self) -> bool:
+        return self.__paused
+
+    @property
+    def pause_cooldown(self) -> int:
+        return self.__pause_cooldown
