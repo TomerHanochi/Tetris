@@ -5,7 +5,7 @@ from tetris.consts import Consts
 class GhostTetromino:
     def __init__(self, x: int, rotation: list[tuple[int, int]], blocks: list[Block]) -> None:
         self.__x = x
-        self.__y = Consts.Y_OFFSET
+        self.__y = Consts.STARTING_POSITION[1]
         self.__rotation = rotation
         self.__blocks = [
             Block('ghost', i, j) for (i, j) in rotation
@@ -25,7 +25,7 @@ class GhostTetromino:
 
     def update(self, x: int, rotation: list[tuple[int, int]], blocks: list[Block]):
         self.__x = x
-        self.__y = Consts.Y_OFFSET
+        self.__y = Consts.STARTING_POSITION[1]
         self.__rotation = rotation
         for block, (i, j) in zip(self.blocks, rotation):
             block.i = i

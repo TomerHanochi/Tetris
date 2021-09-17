@@ -65,5 +65,7 @@ class Consts:
             ((1, 0), (1, 1), (1, 2), (0, 0)),
         ),
     }
-    Y_OFFSET = -4
+    # the default x position is in the middle column, by default
+    # the default y position is just above the board, by default
+    STARTING_POSITION = 3, -4
     TETROMINO_NAMES = ROTATIONS.keys()
