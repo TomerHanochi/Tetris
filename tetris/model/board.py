@@ -5,11 +5,11 @@ from tetris.model.ghost_tetromino import GhostTetromino
 
 class Board:
     def __init__(self) -> None:
-        self.__cells = [[None for j in range(Consts.GRID_HEIGHT)] for i in range(Consts.GRID_WIDTH)]
+        self.__cells = [[None for i in range(Consts.GRID_WIDTH)] for j in range(Consts.GRID_HEIGHT)]
 
     def add_piece(self, tetromino: Tetromino):
         for (i, j) in tetromino.rotation:
-            self.__cells[tetromino.x + i][tetromino.y + j] = tetromino.name
+            self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
 
     def hard_drop(self, tetromino: Tetromino or GhostTetromino) -> int:
         rows_dropped = 0

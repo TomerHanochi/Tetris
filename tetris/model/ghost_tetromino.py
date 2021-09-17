@@ -8,7 +8,8 @@ class GhostTetromino:
         self.__rotation = rotation
 
     def collide_down(self, cells: list[list[str or None]]) -> bool:
-        return any(cells[self.x + i][self.y + j + 1] is not None for (i, j) in self.rotation)
+        return (self.y >= 0 and
+                any(cells[self.y + j + 1][self.x + i] is not None for (i, j) in self.rotation))
 
     def can_move_down(self, cells: list[list[str or None]]) -> bool:
         return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(cells)

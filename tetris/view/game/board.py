@@ -32,9 +32,9 @@ class Board(ViewObject):
                        name=tetromino.name)
 
         # draws all existing blocks in board
-        blocks = [(i, j, self.model.board.cells[i][j])
+        blocks = [(i, j, self.model.board.cells[j][i])
                   for i in range(Consts.GRID_WIDTH) for j in range(Consts.GRID_HEIGHT)
-                  if self.model.board.cells[i][j] is not None]
+                  if self.model.board.cells[j][i] is not None]
         for (i, j, parent) in blocks:
             Draw.image(x=self.x + (i + 1) * Consts.BLOCK_SIZE,
                        y=self.y + (j + 1) * Consts.BLOCK_SIZE,

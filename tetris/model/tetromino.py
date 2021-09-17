@@ -13,14 +13,14 @@ class Tetromino:
         self.__rotations = Consts.ROTATIONS[name]
         self.__rotation = 0
         self.__x, self.__y = Consts.STARTING_POSITION
-        self.__y = 0
 
     @property
     def out_of_bounds(self) -> bool:
         return self.x + self.leftmost < 0 or self.x + self.rightmost >= Consts.GRID_WIDTH
 
     def overlap(self, cells: list[list[str or None]]) -> bool:
-        return any(cells[self.x + i][self.y + j] is not None for (i, j) in self.rotation)
+        return (self.y >= 0 and
+                any(cells[self.y + j][self.x + i] is not None for (i, j) in self.rotation))
 
     def rotate_right(self, cells: list[list[str or None]]) -> None:
         """Rotates the piece right, if rotation is illegal rotates it back"""
@@ -35,7 +35,8 @@ class Tetromino:
             self.rotate_right(cells)
 
     def collide_right(self, cells: list[list[str or None]]) -> bool:
-        return any(cells[self.x + i + 1][self.y + j] is not None for (i, j) in self.rotation)
+        return (self.y >= 0 and
+                any(cells[self.y + j][self.x + i + 1] is not None for (i, j) in self.rotation))
 
     def can_move_right(self, cells: list[list[str or None]]) -> bool:
         return self.x + self.rightmost < Consts.GRID_WIDTH - 1 and not self.collide_right(cells)
@@ -44,7 +45,8 @@ class Tetromino:
         self.__x += 1
 
     def collide_left(self, cells: list[list[str or None]]) -> bool:
-        return any(cells[self.x + i - 1][self.y + j] is not None for (i, j) in self.rotation)
+        return (self.y >= 0 and
+                any(cells[self.y + j][self.x + i - 1] is not None for (i, j) in self.rotation))
 
     def can_move_left(self, cells: list[list[str or None]]) -> bool:
         return self.x + self.leftmost > 0 and not self.collide_left(cells)
@@ -53,7 +55,8 @@ class Tetromino:
         self.__x -= 1
 
     def collide_down(self, cells: list[list[str or None]]) -> bool:
-        return any(cells[self.x + i][self.y + j + 1] is not None for (i, j) in self.rotation)
+        return (self.y >= 0 and
+                any(cells[self.y + j + 1][self.x + i] is not None for (i, j) in self.rotation))
 
     def can_move_down(self, cells: list[list[str or None]]) -> bool:
         return self.y + self.bottommost < Consts.GRID_HEIGHT - 1 and not self.collide_down(cells)
