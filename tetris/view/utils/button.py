@@ -9,8 +9,7 @@ from tetris.view.utils.draw import Draw
 
 class Button(ViewObject):
     def __init__(self, x: float, y: float, text: str, func: Callable) -> None:
-        self.__text = Fonts.button.render(text, True, Colors.button_text,
-                                          Colors.button_background)
+        self.__text = Fonts.button.render(text, True, Colors.button_text)
         self.__x = x
         self.__y = y
         self.__w = self.__text.get_width()
@@ -26,11 +25,6 @@ class Button(ViewObject):
         self.func(*args)
 
     def draw(self) -> None:
-        # the offset is to make sure the background is bigger than the text
-        offset = 0.05
-        Draw.fill(x=self.__x - self.__w * offset, y=self.__y - self.__h * offset,
-                  w=self.__w * (1 + offset * 2), h=self.__h * (1 + offset * 2),
-                  color=Colors.button_background)
         Draw.image(self.__x, self.__y, self.__text)
 
     @property
