@@ -11,7 +11,9 @@ class Consts:
     # the frames before the player can move horizontally
     HORIZONTAL_COOLDOWN = 6
     # the frames before the player can soft drop
-    SOFT_DROP_COOLDOWN = int(FRAME_RATE / 20)
+    SOFT_DROP_COOLDOWN = FRAME_RATE // 20
+    # the frames before a piece is locked
+    LOCK_COOLDOWN = FRAME_RATE // 4
     # the frames before the tetromino moves down, differs by level
     COOLDOWN_BY_LEVEL = (48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5,
                          4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1)

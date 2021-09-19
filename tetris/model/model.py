@@ -34,6 +34,7 @@ class Model:
         self.__should_soft_drop = False
         self.__soft_drop_cooldown = 0
         self.__move_down_cooldown = 0
+        self.__lock_cooldown = Consts.LOCK_COOLDOWN
 
         # whether the game was paused
         self.__paused = False
@@ -78,6 +79,8 @@ class Model:
 
             if self.can_move_down:
                 self.move_down()
+            elif self.__lock_cooldown > 0:
+                self.__lock_cooldown -= 1
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
                 # the current tetrominoes blocks are appended to the all blocks list
@@ -96,8 +99,8 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return (self.cur_tetromino.can_move_right(self.board.cells) and
-                self.__move_right_cooldown == 0)
+        return (self.__move_right_cooldown == 0 and
+                self.cur_tetromino.can_move_right(self.board.cells))
 
     def start_move_right(self) -> None:
         self.__should_move_right = True
@@ -111,8 +114,8 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return (self.cur_tetromino.can_move_left(self.board.cells) and
-                self.__move_left_cooldown == 0)
+        return (self.__move_left_cooldown == 0 and
+                self.cur_tetromino.can_move_left(self.board.cells))
 
     def start_move_left(self) -> None:
         self.__should_move_left = True
@@ -132,6 +135,7 @@ class Model:
         if self.__move_down_cooldown == 0:
             self.cur_tetromino.move_down()
             self.__move_down_cooldown = Consts.COOLDOWN_BY_LEVEL[self.level]
+            self.__lock_cooldown = Consts.LOCK_COOLDOWN
 
     def rotate_right(self) -> None:
         self.cur_tetromino.rotate_right(self.board.cells)
@@ -141,8 +145,8 @@ class Model:
 
     @property
     def can_soft_drop(self) -> bool:
-        return (self.cur_tetromino.can_move_down(self.board.cells) and
-                self.__soft_drop_cooldown == 0)
+        return (self.__soft_drop_cooldown == 0 and
+                self.cur_tetromino.can_move_down(self.board.cells))
 
     def start_soft_drop(self) -> None:
         self.__should_soft_drop = True
@@ -158,6 +162,7 @@ class Model:
 
     def hard_drop(self) -> None:
         self.__score += self.board.hard_drop(self.cur_tetromino) * Consts.HARD_DROP_MULT
+        self.__lock_cooldown = 0
 
     def hold(self) -> None:
         if self.__can_be_held:
