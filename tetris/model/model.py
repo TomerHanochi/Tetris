@@ -14,7 +14,7 @@ class Model:
     4. Next Tetrominoes
     5. Ghost Tetrominoes
     """
-    def __init__(self) -> None:
+    def __init__(self, use_cooldown: bool = True) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
         self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
@@ -27,6 +27,7 @@ class Model:
 
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
+        self.__use_cooldown = use_cooldown
         self.__should_move_right = False
         self.__move_right_cooldown = 0
         self.__should_move_left = False
@@ -96,8 +97,8 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return (self.cur_tetromino.can_move_right(self.board.cells) and
-                self.__move_right_cooldown == 0)
+        return ((not self.__use_cooldown or self.__move_right_cooldown == 0) and
+                self.cur_tetromino.can_move_right(self.board.cells))
 
     def start_move_right(self) -> None:
         self.__should_move_right = True
@@ -111,8 +112,8 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return (self.cur_tetromino.can_move_left(self.board.cells) and
-                self.__move_left_cooldown == 0)
+        return ((not self.__use_cooldown or self.__move_left_cooldown == 0) and
+                self.cur_tetromino.can_move_left(self.board.cells))
 
     def start_move_left(self) -> None:
         self.__should_move_left = True
@@ -141,8 +142,8 @@ class Model:
 
     @property
     def can_soft_drop(self) -> bool:
-        return (self.cur_tetromino.can_move_down(self.board.cells) and
-                self.__soft_drop_cooldown == 0)
+        return ((not self.__use_cooldown or self.__soft_drop_cooldown == 0) and
+                self.cur_tetromino.can_move_down(self.board.cells))
 
     def start_soft_drop(self) -> None:
         self.__should_soft_drop = True

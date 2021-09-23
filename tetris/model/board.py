@@ -4,8 +4,12 @@ from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Board:
-    def __init__(self) -> None:
-        self.__cells = [[None for _ in range(Consts.GRID_WIDTH)] for _ in range(Consts.GRID_HEIGHT)]
+    def __init__(self, cells: list[list[str or None]] = None) -> None:
+        if cells is None:
+            self.__cells = [[None for _ in range(Consts.GRID_WIDTH)]
+                            for _ in range(Consts.GRID_HEIGHT)]
+        else:
+            self.__cells = [[cell for cell in row] for row in cells]
 
     def add_piece(self, tetromino: Tetromino):
         """Adds the blocks of a tetromino to the board"""
@@ -62,3 +66,17 @@ class Board:
     @property
     def cells(self) -> list[list[str or None]]:
         return self.__cells
+
+    @cells.setter
+    def cells(self, cells: list[list[str or None]]) -> None:
+        if all(cell for row in cells for cell in row):
+
+            if len(cells) == Consts.GRID_HEIGHT and len(cells[0]) == Consts.GRID_WIDTH:
+                self.__cells = cells
+            else:
+                raise ValueError(
+                    f'Size doesn\'t match. expected {Consts.GRID_HEIGHT}x{Consts.GRID_WIDTH} ' +
+                    f'got {len(cells)}x{len(cells[0])}'
+                )
+        raise TypeError(f'Wrong parameter type. expected list[list[str or None]] got ' +
+                        cells.__class__.__name__)
