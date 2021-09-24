@@ -2,6 +2,7 @@ import pygame as pg
 
 from tetris.model.model import Model
 from tetris.view.view import View
+from tetris.ai.events import Events
 
 
 class Controller:
@@ -13,6 +14,48 @@ class Controller:
         self.__model = Model()
         self.__view = View(self.__model)
 
+    def player_key_down(self, key) -> None:
+        if not self.__model.paused and self.__model.pause_cooldown == 0:
+            if key == pg.K_RIGHT:
+                self.__model.start_move_right()
+            elif key == pg.K_LEFT:
+                self.__model.start_move_left()
+            elif key == pg.K_UP or key == pg.K_x:
+                self.__model.rotate_right()
+            elif key == pg.KMOD_CTRL or key == pg.K_z:
+                self.__model.rotate_left()
+            elif key == pg.K_DOWN:
+                self.__model.start_soft_drop()
+            elif key == pg.K_SPACE:
+                self.__model.hard_drop()
+            elif key == pg.KMOD_SHIFT or key == pg.K_c:
+                self.__model.hold()
+        if key == pg.K_ESCAPE:
+            self.__model.pause_or_resume()
+
+    def player_key_up(self, key) -> None:
+        if key == pg.K_RIGHT:
+            self.__model.stop_move_right()
+        elif key == pg.K_LEFT:
+            self.__model.stop_move_left()
+        elif key == pg.K_DOWN:
+            self.__model.stop_soft_drop()
+
+    def ai_key_down(self, key) -> None:
+        if not self.__model.paused and self.__model.pause_cooldown == 0:
+            if key == pg.K_RIGHT:
+                self.__model.move_right()
+            elif key == pg.K_LEFT:
+                self.__model.move_left()
+            elif key == pg.K_x:
+                self.__model.rotate_right()
+            elif key == pg.K_z:
+                self.__model.rotate_left()
+            elif key == pg.K_SPACE:
+                self.__model.hard_drop()
+            elif key == pg.K_c:
+                self.__model.hold()
+
     def handle(self, event) -> None:
         """Handles the various pygame events"""
         if event.type == pg.QUIT:
@@ -22,32 +65,13 @@ class Controller:
             pg.quit()
             exit()
         elif event.type == pg.KEYDOWN:
-            if not self.__model.paused and self.__model.pause_cooldown == 0:
-                if event.key == pg.K_RIGHT:
-                    self.__model.start_move_right()
-                elif event.key == pg.K_LEFT:
-                    self.__model.start_move_left()
-                elif event.key == pg.K_UP or event.key == pg.K_x:
-                    self.__model.rotate_right()
-                elif event.key == pg.KMOD_CTRL or event.key == pg.K_z:
-                    self.__model.rotate_left()
-                elif event.key == pg.K_DOWN:
-                    self.__model.start_soft_drop()
-                elif event.key == pg.K_SPACE:
-                    self.__model.hard_drop()
-                elif event.key == pg.KMOD_SHIFT or event.key == pg.K_c:
-                    self.__model.hold()
-            if event.key == pg.K_ESCAPE:
-                self.__model.pause_or_resume()
+            self.player_key_down(event.key)
         elif event.type == pg.KEYUP:
-            if event.key == pg.K_RIGHT:
-                self.__model.stop_move_right()
-            elif event.key == pg.K_LEFT:
-                self.__model.stop_move_left()
-            elif event.key == pg.K_DOWN:
-                self.__model.stop_soft_drop()
+            self.player_key_up(event.key)
         elif event.type == pg.MOUSEBUTTONDOWN:
             self.__view.click()
+        elif event.type == Events.AI_MOVE:
+            self.ai_key_down(event.key)
 
     def run(self) -> None:
         # main loop for the game
