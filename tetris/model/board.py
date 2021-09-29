@@ -69,14 +69,10 @@ class Board:
 
     @cells.setter
     def cells(self, cells: list[list[str or None]]) -> None:
-        if all(cell for row in cells for cell in row):
-
-            if len(cells) == Consts.GRID_HEIGHT and len(cells[0]) == Consts.GRID_WIDTH:
-                self.__cells = cells
-            else:
-                raise ValueError(
-                    f'Size doesn\'t match. expected {Consts.GRID_HEIGHT}x{Consts.GRID_WIDTH} ' +
-                    f'got {len(cells)}x{len(cells[0])}'
-                )
-        raise TypeError(f'Wrong parameter type. expected list[list[str or None]] got ' +
-                        cells.__class__.__name__)
+        if len(cells) == Consts.GRID_HEIGHT and len(cells[0]) == Consts.GRID_WIDTH:
+            self.__cells = [[cell for cell in row] for row in cells]
+        else:
+            raise ValueError(
+                f'Size doesn\'t match. expected {Consts.GRID_HEIGHT}x{Consts.GRID_WIDTH} ' +
+                f'got {len(cells)}x{len(cells[0])}'
+            )

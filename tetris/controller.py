@@ -11,7 +11,7 @@ class Controller:
     Controls both the view and the model
     """
     def __init__(self) -> None:
-        self.__model = Model()
+        self.__model = Model(use_cooldown=False)
         self.__view = View(self.__model)
 
     def player_key_down(self, key) -> None:
@@ -43,14 +43,12 @@ class Controller:
 
     def ai_key_down(self, key) -> None:
         if not self.__model.paused and self.__model.pause_cooldown == 0:
-            if key == pg.K_RIGHT:
+            if key == pg.K_RIGHT and self.__model.can_move_right:
                 self.__model.move_right()
-            elif key == pg.K_LEFT:
+            elif key == pg.K_LEFT and self.__model.can_move_left:
                 self.__model.move_left()
             elif key == pg.K_x:
                 self.__model.rotate_right()
-            elif key == pg.K_z:
-                self.__model.rotate_left()
             elif key == pg.K_SPACE:
                 self.__model.hard_drop()
             elif key == pg.K_c:
@@ -76,6 +74,7 @@ class Controller:
     def run(self) -> None:
         # main loop for the game
         while True:
+
             # handles all current events
             for event in pg.event.get():
                 self.handle(event)

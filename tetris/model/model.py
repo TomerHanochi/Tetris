@@ -3,6 +3,7 @@ from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
 from tetris.model.ghost_tetromino import GhostTetromino
+from tetris.ai.algorithm import Algorithm
 
 
 class Model:
@@ -78,6 +79,9 @@ class Model:
                 self.__tetromino_set.generate_new_tetrominoes()
 
             if self.can_move_down:
+                Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
+                                  next_tetromino=self.__tetromino_set.get_next()[0],
+                                  held_tetromino=self.held_tetromino)
                 self.move_down()
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
@@ -193,7 +197,7 @@ class Model:
     @property
     def terminal(self) -> bool:
         """whether the game has ended"""
-        return False
+        return any(cell is not None for cell in self.board.cells[0])
 
     @property
     def next(self) -> list[str]:

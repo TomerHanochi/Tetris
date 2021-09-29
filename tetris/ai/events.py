@@ -7,6 +7,7 @@ class Events:
         pg.event.post(event_)
 
     AI_MOVE = pg.event.custom_type()
+
     move_right = pg.event.Event(AI_MOVE, key=pg.K_RIGHT)
     move_left = pg.event.Event(AI_MOVE, key=pg.K_LEFT)
     hard_drop = pg.event.Event(AI_MOVE, key=pg.K_SPACE)
