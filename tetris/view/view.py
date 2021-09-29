@@ -2,6 +2,7 @@ import pygame as pg
 
 from tetris.assets.assets import Colors, Sounds
 from tetris.view.utils.view_object import ViewObject
+from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.button import Button
 from tetris.view.game.board import Board
 from tetris.view.game.held import Held
@@ -33,8 +34,7 @@ class View:
     def click(self) -> None:
         for layer in reversed(self.layers):
             for view_object in layer:
-                is_clicked = getattr(view_object, 'is_clicked', False)
-                if is_clicked:
+                if isinstance(view_object, ClickableViewObject) and view_object.is_clicked:
                     view_object.click()
 
     def setup_game(self) -> None:
@@ -52,6 +52,10 @@ class View:
                               y=next_.y + (next_.h + 1) * Consts.BLOCK_SIZE,
                               text='RESTART', func=self.model.reset)
 
+        use_ai_button = Button(x=next_.x,
+                               y=reset_button.y + reset_button.h + Consts.BLOCK_SIZE,
+                               text='USE-AI', func=self.__model.switch_use_ai)
+
         # Right part of the screen
         held = Held(x=board.x + board.w * Consts.BLOCK_SIZE,
                     y=board.y + Consts.BLOCK_SIZE,
@@ -64,7 +68,7 @@ class View:
         pause = Pause(model=self.model)
 
         self.__layers = [
-            [next_, held, stats, board, reset_button],
+            [next_, held, stats, board, reset_button, use_ai_button],
             [pause]
         ]
 

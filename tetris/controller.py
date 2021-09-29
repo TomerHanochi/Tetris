@@ -11,7 +11,7 @@ class Controller:
     Controls both the view and the model
     """
     def __init__(self) -> None:
-        self.__model = Model(use_cooldown=False)
+        self.__model = Model()
         self.__view = View(self.__model)
 
     def player_key_down(self, key) -> None:

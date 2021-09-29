@@ -15,7 +15,7 @@ class Model:
     4. Next Tetrominoes
     5. Ghost Tetrominoes
     """
-    def __init__(self, use_cooldown: bool = True) -> None:
+    def __init__(self) -> None:
         self.__tetromino_set = TetrominoSet()
         self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
         self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
@@ -26,9 +26,10 @@ class Model:
         # a tetromino can be held only once per 'turn'
         self.__can_be_held = True
 
+        # whether the ai or the player is playing
+        self.__use_ai = False
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
-        self.__use_cooldown = use_cooldown
         self.__should_move_right = False
         self.__move_right_cooldown = 0
         self.__should_move_left = False
@@ -79,9 +80,10 @@ class Model:
                 self.__tetromino_set.generate_new_tetrominoes()
 
             if self.can_move_down:
-                Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
-                                  next_tetromino=self.__tetromino_set.get_next()[0],
-                                  held_tetromino=self.held_tetromino)
+                if self.__use_ai:
+                    Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
+                                      next_tetromino=self.__tetromino_set.get_next()[0],
+                                      held_tetromino=self.held_tetromino)
                 self.move_down()
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
@@ -101,7 +103,7 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return ((not self.__use_cooldown or self.__move_right_cooldown == 0) and
+        return ((not self.__use_ai or self.__move_right_cooldown == 0) and
                 self.cur_tetromino.can_move_right(self.board.cells))
 
     def start_move_right(self) -> None:
@@ -116,7 +118,7 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return ((not self.__use_cooldown or self.__move_left_cooldown == 0) and
+        return ((not self.__use_ai or self.__move_left_cooldown == 0) and
                 self.cur_tetromino.can_move_left(self.board.cells))
 
     def start_move_left(self) -> None:
@@ -146,7 +148,7 @@ class Model:
 
     @property
     def can_soft_drop(self) -> bool:
-        return ((not self.__use_cooldown or self.__soft_drop_cooldown == 0) and
+        return ((not self.__use_ai or self.__soft_drop_cooldown == 0) and
                 self.cur_tetromino.can_move_down(self.board.cells))
 
     def start_soft_drop(self) -> None:
@@ -193,6 +195,9 @@ class Model:
         if not self.paused:
             # 3 extra seconds of pause
             self.__pause_cooldown = Consts.FRAME_RATE * 3
+
+    def switch_use_ai(self) -> None:
+        self.__use_ai = not self.__use_ai
 
     @property
     def terminal(self) -> bool:

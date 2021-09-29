@@ -12,7 +12,6 @@ class Pause(ViewObject):
         self.__model = model
         self.title = Fonts.title.render(f'PAUSE', True, Colors.title)
 
-
     def draw(self) -> None:
         if self.model.paused:
             Draw.image(x=self.__x - self.title.get_width() * .5,
