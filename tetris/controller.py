@@ -15,7 +15,8 @@ class Controller:
         self.__view = View(self.__model)
 
     def player_key_down(self, key) -> None:
-        if not self.__model.paused and self.__model.pause_cooldown == 0:
+        if not self.__model.paused and self.__model.pause_cooldown == 0 and \
+                not self.__model.terminal:
             if key == pg.K_RIGHT:
                 self.__model.start_move_right()
             elif key == pg.K_LEFT:

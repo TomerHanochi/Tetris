@@ -4,6 +4,8 @@ from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
 from tetris.model.ghost_tetromino import GhostTetromino
 from tetris.ai.algorithm import Algorithm
+from tetris.ai.vector import Vector
+from tetris.ai.network import Network
 
 
 class Model:
@@ -28,6 +30,9 @@ class Model:
 
         # whether the ai or the player is playing
         self.__use_ai = False
+        weights_str = open('tetris/model/best_network.txt').read().split(', ')
+        weights = Vector(*(float(weight_str) for weight_str in weights_str))
+        self.__network = Network(weights=weights)
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
         self.__should_move_right = False
@@ -83,7 +88,7 @@ class Model:
                 if self.__use_ai:
                     Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
                                       next_tetromino=self.__tetromino_set.get_next()[0],
-                                      held_tetromino=self.held_tetromino)
+                                      held_tetromino=self.held_tetromino, network=self.__network)
                 self.move_down()
             # if the current tetromino can't move down, that means it needs to be replaced
             else:
@@ -103,7 +108,7 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return ((not self.__use_ai or self.__move_right_cooldown == 0) and
+        return ((self.__use_ai or self.__move_right_cooldown == 0) and
                 self.cur_tetromino.can_move_right(self.board.cells))
 
     def start_move_right(self) -> None:
@@ -118,7 +123,7 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return ((not self.__use_ai or self.__move_left_cooldown == 0) and
+        return ((self.__use_ai or self.__move_left_cooldown == 0) and
                 self.cur_tetromino.can_move_left(self.board.cells))
 
     def start_move_left(self) -> None:
@@ -148,7 +153,7 @@ class Model:
 
     @property
     def can_soft_drop(self) -> bool:
-        return ((not self.__use_ai or self.__soft_drop_cooldown == 0) and
+        return ((self.__use_ai or self.__soft_drop_cooldown == 0) and
                 self.cur_tetromino.can_move_down(self.board.cells))
 
     def start_soft_drop(self) -> None:

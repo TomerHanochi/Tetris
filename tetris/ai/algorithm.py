@@ -3,7 +3,9 @@ from dataclasses import dataclass, field
 
 from tetris.consts import Consts
 from tetris.ai.network import Network
+from tetris.ai.vector import Vector
 from tetris.ai.events import Events
+from tetris.ai.heuristics import Heuristics
 from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
 
@@ -63,16 +65,18 @@ class Algorithm:
         return moves
 
     @staticmethod
-    def calc_score(cells: list[list[str or None]]) -> float:
+    def calc_score(cells: list[list[str or None]], network: Network) -> float:
         """
         Calculate a fitness score for the given board state
         :param cells: a matrix representing the board state
+        :param network: a neural network with which to calculate the score
         :return: a fitness score for the current state
         """
-        return uniform(-10, 10)
+        inputs = Heuristics.get(cells=cells)
+        return network.activate(Vector(*inputs))
 
     @staticmethod
-    def score_move(board: Board, tetromino: Tetromino, move: Move) -> float:
+    def score_move(board: Board, tetromino: Tetromino, move: Move, network: Network) -> float:
         for _ in range(move.rotation):
             tetromino.rotate_right(board.cells)
 
@@ -86,34 +90,34 @@ class Algorithm:
 
         board.hard_drop(tetromino)
         board.add_piece(tetromino)
-        score = Algorithm.calc_score(board.cells)
+        score = Algorithm.calc_score(board.cells, network)
 
         return score
 
     @staticmethod
-    def best_move(cells: list[list[str or None]], cur_tetromino: str) -> Move:
+    def best_move(cells: list[list[str or None]], tetromino_name: str, network: Network) -> Move:
         board = Board(cells=cells)
-        tetromino = Tetromino(name=cur_tetromino)
+        tetromino = Tetromino(name=tetromino_name)
         best_move = Move()
-        moves = Algorithm.get_moves(cur_tetromino)
+        moves = Algorithm.get_moves(tetromino_name)
         for move in moves:
-            move.score = Algorithm.score_move(board=board, tetromino=tetromino, move=move)
+            move.score = Algorithm.score_move(board, tetromino, move, network)
             if move > best_move:
                 best_move = move
 
             board.cells = cells
-            tetromino.__init__(cur_tetromino)
+            tetromino.__init__(tetromino_name)
 
         return best_move
 
     @staticmethod
     def do_move(cells: list[list[str or None]], cur_tetromino: str, next_tetromino: str,
-                held_tetromino: str or None) -> None:
-        best_move = Algorithm.best_move(cells, cur_tetromino)
+                held_tetromino: str or None, network: Network) -> None:
+        best_move = Algorithm.best_move(cells, cur_tetromino, network)
         if held_tetromino is None:
-            alt_best_move = Algorithm.best_move(cells, next_tetromino)
+            alt_best_move = Algorithm.best_move(cells, next_tetromino, network)
         else:
-            alt_best_move = Algorithm.best_move(cells, next_tetromino)
+            alt_best_move = Algorithm.best_move(cells, held_tetromino, network)
 
         if alt_best_move > best_move:
             Events.post(Events.hold)

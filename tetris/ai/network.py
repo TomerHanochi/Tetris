@@ -1,10 +1,11 @@
 from random import uniform
+from math import exp
 
 from tetris.ai.vector import Vector
 
 
 class Network:
-    def __init__(self, size: int = 4, weights: Vector = None, activate_func: str = 'relu') -> None:
+    def __init__(self, size: int = 4, weights: Vector = None, activate_func: str = 'sigmoid') -> None:
         if weights is None:
             self.__weights = Vector(*(uniform(-1, 1) for _ in range(size)))
         else:
@@ -26,3 +27,7 @@ class Network:
     @staticmethod
     def relu(x) -> float:
         return x if x > 0 else 0
+
+    @staticmethod
+    def sigmoid(x) -> float:
+        return 1 / (1 + exp(-x))
