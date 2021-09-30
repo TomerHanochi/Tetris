@@ -1,3 +1,5 @@
+from random import uniform
+
 from tetris.consts import Consts
 from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
@@ -6,6 +8,7 @@ from tetris.model.ghost_tetromino import GhostTetromino
 from tetris.ai.algorithm import Algorithm
 from tetris.ai.vector import Vector
 from tetris.ai.network import Network
+from tetris.ai.heuristics import Heuristics
 
 
 class Model:
@@ -30,9 +33,8 @@ class Model:
 
         # whether the ai or the player is playing
         self.__use_ai = False
-        weights_str = open('tetris/model/best_network.txt').read().split(', ')
-        weights = Vector(*(float(weight_str) for weight_str in weights_str))
-        self.__network = Network(weights=weights)
+        weights = open('tetris/ai/best_network.txt', 'r').read().split(', ')
+        self.__network = Network(weights=Vector(*map(float, weights)))
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
         self.__should_move_right = False
@@ -213,6 +215,11 @@ class Model:
     def next(self) -> list[str]:
         """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
         return self.__tetromino_set.get_next()
+
+    @property
+    def next_tetromino(self) -> str:
+        """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
+        return self.next[0]
 
     @property
     def cur_tetromino(self) -> Tetromino:

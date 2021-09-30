@@ -36,7 +36,7 @@ class Algorithm:
         """
         # the rightmost x index in the rotation
         rightest = max(Consts.ROTATIONS[tetromino][rotation], key=lambda x: x[0])[0]
-        return Consts.GRID_WIDTH - (Consts.STARTING_X + rightest)
+        return Consts.GRID_WIDTH - (Consts.STARTING_X + rightest) + 1
 
     @staticmethod
     def get_left(tetromino: str, rotation: int) -> int:
@@ -47,7 +47,7 @@ class Algorithm:
         """
         # the leftmost x index in the rotation
         leftest = min(Consts.ROTATIONS[tetromino][rotation], key=lambda x: x[0])[0]
-        return Consts.STARTING_X + leftest
+        return Consts.STARTING_X + leftest + 1
 
     @staticmethod
     def get_moves(tetromino: str) -> list[Move]:
@@ -133,7 +133,3 @@ class Algorithm:
             Events.post(Events.move_left)
 
         Events.post(Events.hard_drop)
-
-
-if __name__ == '__main__':
-    pass

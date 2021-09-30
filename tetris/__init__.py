@@ -1,4 +1,2 @@
-import pygame as pg
-pg.init()
-
-pg.display.set_caption('Tetris')
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'

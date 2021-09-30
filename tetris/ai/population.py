@@ -9,11 +9,12 @@ class Population:
     def __init__(self, size: int = 500, old_pop: Population = None) -> None:
         if old_pop is None:
             self.__networks = [Network() for _ in range(size)]
+            self.__fitnesses = [0 for _ in range(size)]
         else:
             self.__networks = []
             self.crossover(networks=old_pop.networks, fitnesses=old_pop.fitnesses)
             self.mutate()
-        self.__fitnesses = [0 for _ in range(size)]
+            self.__fitnesses = [0 for _ in range(len(self.networks))]
 
     def crossover(self, networks: list[Network], fitnesses: list[float]) -> None:
         sorted_networks_indecies = list(reversed(np.argsort(fitnesses)))
@@ -37,12 +38,15 @@ class Population:
     def fitnesses(self) -> list[float]:
         return self.__fitnesses
 
+    @fitnesses.setter
+    def fitnesses(self, fitnesses: list[float]) -> None:
+        if isinstance(fitnesses, list):
+            if len(fitnesses) == len(self.__fitnesses):
+                self.__fitnesses = fitnesses
+            else:
+                raise ValueError(f'Expected len {len(self.__fitnesses)}, got len {len(fitnesses)}')
+        else:
+            raise TypeError(f'Expected list, got {fitnesses.__class__.__name__}')
 
-if __name__ == '__main__':
-    pop = Population(size=4)
-    for network_ in pop.networks:
-        print(network_.weights)
-    print('\n')
-    pop = Population(old_pop=pop)
-    for network_ in pop.networks:
-        print(network_.weights)
+    def __iter__(self) -> iter:
+        return iter(self.networks)

@@ -2,16 +2,18 @@ from random import uniform
 from math import exp
 
 from tetris.ai.vector import Vector
+from tetris.ai.heuristics import Heuristics
 
 
 class Network:
-    def __init__(self, size: int = 4, weights: Vector = None, activate_func: str = 'sigmoid') -> None:
+    def __init__(self, size: int = Heuristics.size, weights: Vector = None,
+                 activation_func: str = 'sigmoid') -> None:
         if weights is None:
             self.__weights = Vector(*(uniform(-1, 1) for _ in range(size)))
         else:
             self.__weights = weights
         self.weights.normalize()
-        self.activation = getattr(Network, activate_func)
+        self.activation = getattr(Network, activation_func)
 
     def activate(self, x: Vector) -> float:
         return self.activation(self.weights.dot(x))
@@ -31,3 +33,7 @@ class Network:
     @staticmethod
     def sigmoid(x) -> float:
         return 1 / (1 + exp(-x))
+
+    def __repr__(self) -> str:
+        return (f'Network(size={len(self.weights)}, weights={repr(self.weights)}, activation_func='
+                f'{self.activation.__name__})')
