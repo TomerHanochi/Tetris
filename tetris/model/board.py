@@ -14,8 +14,9 @@ class Board:
     def add_piece(self, tetromino: Tetromino):
         """Adds the blocks of a tetromino to the board"""
         for (i, j) in tetromino.rotation:
-            # the name is used so it is possible to get the tile image later
-            self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
+            if tetromino.y + j >= 0:
+                # the name is used so it is possible to get the tile image later
+                self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
 
     def clear_row(self, j) -> None:
         """
