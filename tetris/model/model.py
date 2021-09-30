@@ -3,6 +3,9 @@ from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
 from tetris.model.tetromino_set import TetrominoSet
 from tetris.model.ghost_tetromino import GhostTetromino
+from tetris.ai.algorithm import Algorithm
+from tetris.ai.vector import Vector
+from tetris.ai.network import Network
 
 
 class Model:
@@ -25,6 +28,10 @@ class Model:
         # a tetromino can be held only once per 'turn'
         self.__can_be_held = True
 
+        # whether the ai or the player is playing
+        self.__use_ai = False
+        weights = open('tetris/ai/best_network.txt', 'r').read().split(', ')
+        self.__network = Network(weights=Vector(*map(float, weights)))
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
         self.__should_move_right = False
@@ -78,6 +85,10 @@ class Model:
                 self.__tetromino_set.generate_new_tetrominoes()
 
             if self.can_move_down:
+                if self.__use_ai:
+                    Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
+                                      next_tetromino=self.__tetromino_set.get_next()[0],
+                                      held_tetromino=self.held_tetromino, network=self.__network)
                 self.move_down()
             elif self.__lock_cooldown > 0:
                 self.__lock_cooldown -= 1
@@ -99,7 +110,7 @@ class Model:
 
     @property
     def can_move_right(self) -> bool:
-        return (self.__move_right_cooldown == 0 and
+        return ((self.__use_ai or self.__move_right_cooldown == 0) and
                 self.cur_tetromino.can_move_right(self.board.cells))
 
     def start_move_right(self) -> None:
@@ -114,7 +125,7 @@ class Model:
 
     @property
     def can_move_left(self) -> bool:
-        return (self.__move_left_cooldown == 0 and
+        return ((self.__use_ai or self.__move_left_cooldown == 0) and
                 self.cur_tetromino.can_move_left(self.board.cells))
 
     def start_move_left(self) -> None:
@@ -145,7 +156,7 @@ class Model:
 
     @property
     def can_soft_drop(self) -> bool:
-        return (self.__soft_drop_cooldown == 0 and
+        return ((self.__use_ai or self.__soft_drop_cooldown == 0) and
                 self.cur_tetromino.can_move_down(self.board.cells))
 
     def start_soft_drop(self) -> None:
@@ -194,15 +205,23 @@ class Model:
             # 3 extra seconds of pause
             self.__pause_cooldown = Consts.FRAME_RATE * 3
 
+    def switch_use_ai(self) -> None:
+        self.__use_ai = not self.__use_ai
+
     @property
     def terminal(self) -> bool:
         """whether the game has ended"""
-        return False
+        return any(cell is not None for cell in self.board.cells[0])
 
     @property
     def next(self) -> list[str]:
         """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
         return self.__tetromino_set.get_next()
+
+    @property
+    def next_tetromino(self) -> str:
+        """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
+        return self.next[0]
 
     @property
     def cur_tetromino(self) -> Tetromino:

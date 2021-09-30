@@ -4,14 +4,19 @@ from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Board:
-    def __init__(self) -> None:
-        self.__cells = [[None for _ in range(Consts.GRID_WIDTH)] for _ in range(Consts.GRID_HEIGHT)]
+    def __init__(self, cells: list[list[str or None]] = None) -> None:
+        if cells is None:
+            self.__cells = [[None for _ in range(Consts.GRID_WIDTH)]
+                            for _ in range(Consts.GRID_HEIGHT)]
+        else:
+            self.__cells = [[cell for cell in row] for row in cells]
 
     def add_piece(self, tetromino: Tetromino):
         """Adds the blocks of a tetromino to the board"""
         for (i, j) in tetromino.rotation:
-            # the name is used so it is possible to get the tile image later
-            self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
+            if tetromino.y + j >= 0:
+                # the name is used so it is possible to get the tile image later
+                self.__cells[tetromino.y + j][tetromino.x + i] = tetromino.name
 
     def clear_row(self, j) -> None:
         """
@@ -62,3 +67,13 @@ class Board:
     @property
     def cells(self) -> list[list[str or None]]:
         return self.__cells
+
+    @cells.setter
+    def cells(self, cells: list[list[str or None]]) -> None:
+        if len(cells) == Consts.GRID_HEIGHT and len(cells[0]) == Consts.GRID_WIDTH:
+            self.__cells = [[cell for cell in row] for row in cells]
+        else:
+            raise ValueError(
+                f'Size doesn\'t match. expected {Consts.GRID_HEIGHT}x{Consts.GRID_WIDTH} ' +
+                f'got {len(cells)}x{len(cells[0])}'
+            )

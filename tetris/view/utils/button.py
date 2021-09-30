@@ -3,11 +3,11 @@ from typing import Callable
 import pygame as pg
 
 from tetris.assets.assets import Colors, Fonts
-from tetris.view.utils.view_object import ViewObject
+from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.draw import Draw
 
 
-class Button(ViewObject):
+class Button(ClickableViewObject):
     def __init__(self, x: float, y: float, text: str, func: Callable) -> None:
         self.__text = Fonts.button.render(text, True, Colors.button_text,
                                           Colors.button_background)
