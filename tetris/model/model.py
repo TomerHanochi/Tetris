@@ -30,7 +30,7 @@ class Model:
 
         # whether the ai or the player is playing
         self.__use_ai = False
-        weights = open('tetris/ai/best_network.txt', 'r').read().split(', ')
+        weights = open(f'{Consts.BASE_PATH}/ai/best_network.txt', 'r').read().split(', ')
         self.__network = Network(weights=Vector(*map(float, weights)))
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
@@ -49,7 +49,7 @@ class Model:
 
         self.__rows_cleared = 0
         self.__score = 0
-        self.__high_score = int(open('tetris/model/highscore.txt', 'r').read())
+        self.__high_score = int(open(f'{Consts.BASE_PATH}/model/highscore.txt', 'r').read())
 
     def update(self) -> None:
         if self.__pause_cooldown > 0:

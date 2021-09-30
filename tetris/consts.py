@@ -1,8 +1,12 @@
+from pathlib import Path
+
+
 class Consts:
     """
     Class of constant values used throughout the game
     Used to make sure there is no need to scour files to change constants
     """
+    BASE_PATH = str(Path(__file__).parent.resolve())
     SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = 1200, 1000
     BLOCK_SIZE = 40
     GRID_WIDTH = 10
