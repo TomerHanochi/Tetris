@@ -4,9 +4,9 @@ import math
 
 
 class Vector:
-    def __init__(self, *args) -> None:
+    def __init__(self, iterable: iter) -> None:
         """ Create a vector, example: v = Vector(1,2) """
-        self.values = tuple(arg for arg in args)
+        self.values = tuple(map(float, iterable))
 
     def magnitude(self) -> float:
         """ Returns the magnitude of the vector """
@@ -33,8 +33,7 @@ class Vector:
         if isinstance(other, Vector):
             return self.dot(other)
         elif isinstance(other, (int, float)):
-            product = tuple(a * other for a in self)
-            return Vector(*product)
+            return self.__class__(a * other for a in self)
         else:
             raise ValueError(f'Multiplication with type {type(other)} not supported')
 
@@ -49,7 +48,7 @@ class Vector:
         else:
             raise ValueError(f'Division with type {type(other)} not supported')
 
-        return self.__class__(*divided)
+        return self.__class__(divided)
 
     def __add__(self, other) -> Vector:
         if isinstance(other, Vector):
@@ -59,7 +58,7 @@ class Vector:
         else:
             raise ValueError(f'Addition with type {type(other)} not supported')
 
-        return self.__class__(*added)
+        return self.__class__(added)
 
     def __radd__(self, other) -> Vector:
         return self.__add__(other)
@@ -72,7 +71,7 @@ class Vector:
         else:
             raise ValueError(f'Subtraction with type {type(other)} not supported')
 
-        return Vector(*subbed)
+        return self.__class__(subbed)
 
     def __rsub__(self, other) -> Vector:
         return self.__sub__(other)

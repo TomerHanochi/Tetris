@@ -9,7 +9,7 @@ class Network:
     def __init__(self, size: int = Heuristics.size, weights: Vector = None,
                  activation_func: str = 'sigmoid') -> None:
         if weights is None:
-            self.__weights = Vector(*(uniform(-1, 1) for _ in range(size)))
+            self.__weights = Vector(uniform(-1, 1) for _ in range(size))
         else:
             self.__weights = weights
         self.weights.normalize()
@@ -19,7 +19,7 @@ class Network:
         return self.activation(self.weights.dot(x))
 
     def mutate(self, power: float) -> None:
-        self.__weights -= Vector(*(uniform(-power, power) for _ in range(len(self.__weights))))
+        self.__weights -= Vector(uniform(-power, power) for _ in range(len(self.__weights)))
         self.__weights.normalize()
 
     @property

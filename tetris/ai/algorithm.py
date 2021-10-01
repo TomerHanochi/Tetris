@@ -73,7 +73,7 @@ class Algorithm:
         :return: a fitness score for the current state
         """
         inputs = Heuristics.get(cells=cells)
-        return network.activate(Vector(*inputs))
+        return network.activate(Vector(inputs))
 
     @staticmethod
     def score_move(board: Board, tetromino: Tetromino, move: Move, network: Network) -> float:

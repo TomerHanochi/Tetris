@@ -31,7 +31,7 @@ class Model:
         # whether the ai or the player is playing
         self.__use_ai = False
         weights = open(f'{Consts.BASE_PATH}/ai/best_network.txt', 'r').read().split(', ')
-        self.__network = Network(weights=Vector(*map(float, weights)))
+        self.__network = Network(weights=Vector(map(float, weights)))
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
         self.__should_move_right = False
