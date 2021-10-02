@@ -1,7 +1,7 @@
 import pygame as pg
 
 from tetris.consts import Consts
-from tetris.assets.assets import Images
+from tetris.view.assets import Images
 
 
 class Context:

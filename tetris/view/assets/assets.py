@@ -51,7 +51,7 @@ class Colors(metaclass=Assets):
 
 class Images(metaclass=Assets):
     """ An assets class with all of the images. """
-    base_path = f'{Consts.BASE_PATH}/assets/images'
+    base_path = f'{Consts.BASE_PATH}/view/assets/images'
     assets = {
         'O': Loader.load_image(f'{base_path}/Yellow.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'I': Loader.load_image(f'{base_path}/LightBlue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
@@ -69,7 +69,7 @@ class Images(metaclass=Assets):
 
 class Fonts(metaclass=Assets):
     """ An assets class with all of the fonts. """
-    base_path = f'{Consts.BASE_PATH}/assets/fonts'
+    base_path = f'{Consts.BASE_PATH}/view/assets/fonts'
     assets = {
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
         'sub_title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE),
@@ -82,7 +82,7 @@ class Sounds(metaclass=Assets):
     """
     An assets class with all of the sounds
     """
-    base_path = f'{Consts.BASE_PATH}/assets/sounds'
+    base_path = f'{Consts.BASE_PATH}/view/assets/sounds'
     assets = {
         'music': Loader.load_sound(f'{base_path}/music.mp3'),
     }

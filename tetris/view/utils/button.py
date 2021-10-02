@@ -1,6 +1,6 @@
 from typing import Callable
 
-from tetris.assets.assets import Colors, Fonts
+from tetris.view.assets import Colors, Fonts
 from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.context import Context
 
