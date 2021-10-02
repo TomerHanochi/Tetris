@@ -19,7 +19,7 @@ class Network:
         return self.activation(self.weights.dot(x))
 
     def mutate(self, power: float) -> None:
-        self.__weights -= Vector(uniform(-power, power) for _ in range(len(self.__weights)))
+        self.__weights.mutate(power)
         self.__weights.normalize()
 
     @property

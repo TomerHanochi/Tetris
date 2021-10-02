@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import math
+from random import choice, uniform
 
 
 class Vector:
     def __init__(self, iterable: iter) -> None:
         """ Create a vector, example: v = Vector(1,2) """
-        self.values = tuple(map(float, iterable))
+        self.__values = tuple(map(float, iterable))
 
     def magnitude(self) -> float:
         """ Returns the magnitude of the vector """
@@ -15,7 +16,7 @@ class Vector:
     def normalize(self) -> Vector:
         """ normalizes a vector """
         mag = self.magnitude()
-        self.values = tuple(x / mag for x in self)
+        self.__values = tuple(x / mag for x in self)
         return self
 
     def dot(self, vector) -> float:
@@ -23,6 +24,12 @@ class Vector:
         if not isinstance(vector, Vector):
             raise ValueError('The dot product requires another vector')
         return sum(a * b for a, b in zip(self, vector))
+
+    def mutate(self, power: float) -> None:
+        mutation = choice(range(len(self)))
+        self.__values = tuple(
+            x if i != mutation else x + uniform(-power, power) for i, x in enumerate(self)
+        )
 
     def __mul__(self, other) -> Vector or float:
         """
@@ -77,13 +84,13 @@ class Vector:
         return self.__sub__(other)
 
     def __iter__(self) -> iter:
-        return iter(self.values)
+        return iter(self.__values)
 
     def __len__(self) -> int:
-        return len(self.values)
+        return len(self.__values)
 
     def __getitem__(self, key) -> float or int:
-        return self.values[key]
+        return self.__values[key]
 
     def __repr__(self) -> str:
-        return repr(self.values)
+        return f'Vector{repr(self.__values)!s}'

@@ -72,7 +72,9 @@ class Algorithm:
         :param network: a neural network with which to calculate the score
         :return: a fitness score for the current state
         """
-        inputs = Heuristics.get(cells=cells)
+        inputs = Heuristics.get(cells=[
+            [0 if cell is None else 1 for cell in row] for row in cells
+        ])
         return network.activate(Vector(inputs))
 
     @staticmethod

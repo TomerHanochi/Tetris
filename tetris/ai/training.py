@@ -1,18 +1,21 @@
-from numpy import argmax
+from multiprocessing import Pool, cpu_count
+from datetime import datetime
 
-from multiprocessing import Pool
+import numpy as np
+from tqdm import tqdm
 
 from tetris.ai.algorithm import Algorithm
 from tetris.ai.network import Network
 from tetris.ai.population import Population
 from tetris.model.model import Model
+from tetris.consts import Consts
 
 
 class Training:
-    workers = 6
-    generations = 20
+    workers = cpu_count()
+    generations = 10
     pop_size = 200
-    eval_epochs = 3
+    eval_epochs = 10
     test_moves = 500
 
     @staticmethod
@@ -53,30 +56,39 @@ class Training:
                 model.hard_drop()
                 model.update()
             fitness += model.cleared
-        return fitness / Training.eval_epochs
+        return fitness
 
     @staticmethod
-    def evaluate_networks(workers: Pool, networks: [list[Network]]) -> list[float]:
+    def evaluate_networks(workers: Pool, networks: [list[Network]], epoch: int) -> list[float]:
+        pbar = tqdm(networks)
+        pbar.set_description(f'epoch {epoch}')
         return [
             workers.apply_async(func=Training.evaluate_network, args=(network,)).get()
-            for network in networks
+            for network in pbar
         ]
 
     @staticmethod
     def train() -> None:
+        print(f'Training {Training.pop_size} networks along {Training.generations} generations, '
+              f'using {Training.workers} cores')
         workers = Pool(Training.workers)
-        population = Population(size=Training.pop_size)
-        population.fitnesses = Training.evaluate_networks(workers=workers,
-                                                          networks=population.networks)
-        print(f'epoch: {0}, fitnesses={sorted(population.fitnesses)[-10:]}')
-        for i in range(1, Training.generations):
-            population = Population(old_pop=population)
+        log_file_name = datetime.now().strftime("%d-%m-%y_%H:%M")
+        log_file_path = f'{Consts.BASE_PATH}/ai/logs/{log_file_name}.txt'
+        open(log_file_path, 'x')
+        population = None
+        for i in range(Training.generations):
+            if population is None:
+                population = Population(size=Training.pop_size)
+            else:
+                population = Population(old_pop=population)
             population.fitnesses = Training.evaluate_networks(workers=workers,
-                                                              networks=population.networks)
-            print(f'epoch: {i}, fitnesses={sorted(population.fitnesses)[-10:]}')
-        best_network = population.networks[argmax(population.fitnesses)]
-        print(best_network.weights)
-        print(best_network)
+                                                              networks=population.networks,
+                                                              epoch=i)
+            best_network = population.networks[np.argmax(population.fitnesses)]
+            log = (f'--------epoch {i}--------\n'
+                   f'top fitness={max(population.fitnesses)}\n'
+                   f'top weights={best_network.weights}\n')
+            open(log_file_path, 'a').write(log)
 
 
 def main() -> None:
