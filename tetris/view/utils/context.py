@@ -4,11 +4,15 @@ from tetris.consts import Consts
 from tetris.assets.assets import Images
 
 
-class Draw:
+class Context:
     @staticmethod
     def window() -> pg.Surface:
         """Returns the current display"""
         return pg.display.get_surface()
+
+    @staticmethod
+    def mouse_pos() -> tuple[float, float]:
+        return pg.mouse.get_pos()
 
     @staticmethod
     def fill(x: float, y: float, w: float, h: float, color: tuple[int, int, int]) -> None:
@@ -19,7 +23,7 @@ class Draw:
         :param h: height of the filled area
         :param color: fill color
         """
-        Draw.window().fill(color, (x, y, w, h))
+        Context.window().fill(color, (x, y, w, h))
 
     @staticmethod
     def image(x: float, y: float, image: pg.Surface):
@@ -28,7 +32,7 @@ class Draw:
         :param y: top left y coordinate
         :param image: an image to draw
         """
-        Draw.window().blit(image, (x, y))
+        Context.window().blit(image, (x, y))
 
     @staticmethod
     def tetromino(x: float, y: float, rotation: list[tuple[int, int]],
@@ -41,8 +45,8 @@ class Draw:
         """
         image = getattr(Images, name)
         for (i, j) in rotation:
-            Draw.image(image=image,
-                       x=(x + i * Consts.BLOCK_SIZE), y=(y + j * Consts.BLOCK_SIZE))
+            Context.image(image=image,
+                          x=(x + i * Consts.BLOCK_SIZE), y=(y + j * Consts.BLOCK_SIZE))
 
     @staticmethod
     def border(x: float, y: float, width: int, height: int) -> None:
@@ -55,10 +59,10 @@ class Draw:
         image = Images.border
         for i in range(width):
             pos_x, pos_y = x + i * Consts.BLOCK_SIZE, y
-            Draw.image(pos_x, pos_y, image)
-            Draw.image(pos_x, pos_y + (height - 1) * Consts.BLOCK_SIZE, image)
+            Context.image(pos_x, pos_y, image)
+            Context.image(pos_x, pos_y + (height - 1) * Consts.BLOCK_SIZE, image)
         # offset by -2 to avoid drawing the corners twice
         for j in range(height - 2):
             pos_x, pos_y = x, y + (j + 1) * Consts.BLOCK_SIZE
-            Draw.image(pos_x, pos_y, image)
-            Draw.image(pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y, image)
+            Context.image(pos_x, pos_y, image)
+            Context.image(pos_x + (width - 1) * Consts.BLOCK_SIZE, pos_y, image)

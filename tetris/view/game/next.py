@@ -1,6 +1,6 @@
 from tetris.assets.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
-from tetris.view.utils.draw import Draw
+from tetris.view.utils.context import Context
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -13,10 +13,10 @@ class Next(ViewObject):
         self.title = Fonts.sub_title.render('NEXT', True, Colors.sub_title)
 
     def draw(self) -> None:
-        Draw.border(self.x, self.y, self.w, self.h)
+        Context.border(self.x, self.y, self.w, self.h)
 
         # Draws the pre rendered next title
-        Draw.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
+        Context.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
                    y=self.y - self.title.get_height() * 1.25,
                    image=self.title)
 
@@ -26,7 +26,7 @@ class Next(ViewObject):
             xs = {x for (x, y) in rotation}
             # the width is the difference between the right and left blocks
             width = max(xs) - min(xs) + 1
-            Draw.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
+            Context.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
                            y=self.y + ((j + 1) * 3 - 1) * Consts.BLOCK_SIZE,
                            rotation=rotation, name=tetromino)
 

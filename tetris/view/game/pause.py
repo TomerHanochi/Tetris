@@ -1,6 +1,6 @@
 from tetris.assets.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
-from tetris.view.utils.draw import Draw
+from tetris.view.utils.context import Context
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -14,13 +14,13 @@ class Pause(ViewObject):
 
     def draw(self) -> None:
         if self.model.paused:
-            Draw.image(x=self.__x - self.title.get_width() * .5,
+            Context.image(x=self.__x - self.title.get_width() * .5,
                        y=self.__y - self.title.get_height() * .5,
                        image=self.title)
         elif self.model.pause_cooldown != 0:
             image = Fonts.title.render(f'{self.model.pause_cooldown // Consts.FRAME_RATE + 1}',
                                        True, Colors.title)
-            Draw.image(x=self.__x - image.get_width() * .5, y=self.__y - image.get_height() * .5,
+            Context.image(x=self.__x - image.get_width() * .5, y=self.__y - image.get_height() * .5,
                        image=image)
 
     @property

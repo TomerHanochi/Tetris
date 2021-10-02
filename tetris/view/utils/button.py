@@ -1,10 +1,8 @@
 from typing import Callable
 
-import pygame as pg
-
 from tetris.assets.assets import Colors, Fonts
 from tetris.view.utils.clickable_view_object import ClickableViewObject
-from tetris.view.utils.draw import Draw
+from tetris.view.utils.context import Context
 
 
 class Button(ClickableViewObject):
@@ -19,7 +17,7 @@ class Button(ClickableViewObject):
 
     @property
     def is_clicked(self) -> bool:
-        x, y = pg.mouse.get_pos()
+        x, y = Context.mouse_pos()
         return 0 < x - self.__x < self.__w and 0 < y - self.__y < self.__h
 
     def click(self, *args) -> None:
@@ -28,10 +26,10 @@ class Button(ClickableViewObject):
     def draw(self) -> None:
         # the offset is to make sure the background is bigger than the text
         offset = 0.05
-        Draw.fill(x=self.__x - self.__w * offset, y=self.__y - self.__h * offset,
-                  w=self.__w * (1 + offset * 2), h=self.__h * (1 + offset * 2),
-                  color=Colors.button_background)
-        Draw.image(self.__x, self.__y, self.__text)
+        Context.fill(x=self.__x - self.__w * offset, y=self.__y - self.__h * offset,
+                     w=self.__w * (1 + offset * 2), h=self.__h * (1 + offset * 2),
+                     color=Colors.button_background)
+        Context.image(self.__x, self.__y, self.__text)
 
     @property
     def x(self) -> float:

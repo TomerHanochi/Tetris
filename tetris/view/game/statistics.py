@@ -1,6 +1,6 @@
 from tetris.assets.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
-from tetris.view.utils.draw import Draw
+from tetris.view.utils.context import Context
 from tetris.model.model import Model
 from tetris.consts import Consts
 
@@ -25,14 +25,14 @@ class Stats(ViewObject):
         for stat_name, rendered_stat in self.stats.items():
             # offset each stat so that it is easier to read
             statistic_y += rendered_stat.get_height() * 2.25
-            Draw.image(x=self.x + (self.w - rendered_stat.get_width()) * .5,
+            Context.image(x=self.x + (self.w - rendered_stat.get_width()) * .5,
                        y=statistic_y, image=rendered_stat)
 
             stat_value = Fonts.statistic.render(str(getattr(self.model, stat_name)), True,
                                                 Colors.statistic)
             # offset each stat value so that it is easier to read
             statistic_y += stat_value.get_height() * 1.25
-            Draw.image(self.x + (self.w - stat_value.get_width()) * .5, statistic_y, stat_value)
+            Context.image(self.x + (self.w - stat_value.get_width()) * .5, statistic_y, stat_value)
 
     @property
     def x(self) -> float:
