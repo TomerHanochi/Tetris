@@ -82,7 +82,8 @@ class Trainer:
             fitness += model.cleared
         return fitness
 
-    def evaluate_networks(self, workers: Pool, networks: [list[Network]], generation: int) -> list[float]:
+    def evaluate_networks(self, workers: Pool, networks: [list[Network]],
+                          generation: int) -> list[float]:
         """
         :param workers: pool of processors that can be used to concurrently evaluate networks
         :param networks: all networks that should be evaluated

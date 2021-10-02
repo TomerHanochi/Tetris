@@ -17,8 +17,8 @@ class Next(ViewObject):
 
         # Draws the pre rendered next title
         Context.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
-                   y=self.y - self.title.get_height() * 1.25,
-                   image=self.title)
+                      y=self.y - self.title.get_height() * 1.25,
+                      image=self.title)
 
         # for each held tetromino, draw it
         for j, tetromino in enumerate(self.model.next_tetrominoes):
@@ -27,8 +27,8 @@ class Next(ViewObject):
             # the width is the difference between the right and left blocks
             width = max(xs) - min(xs) + 1
             Context.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
-                           y=self.y + ((j + 1) * 3 - 1) * Consts.BLOCK_SIZE,
-                           rotation=rotation, name=tetromino)
+                              y=self.y + ((j + 1) * 3 - 1) * Consts.BLOCK_SIZE,
+                              rotation=rotation, name=tetromino)
 
     @property
     def x(self) -> float:

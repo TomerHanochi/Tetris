@@ -10,6 +10,7 @@ class Assets(type):
     Metaclass used to retrieve data from the assets classes.
     this is so instead of writing Colors.assets['background'] you can just write Colors.background.
     """
+
     def __getattr__(cls, item: str) -> tuple[int, int, int] | pg.font.Font | pg.Surface:
         try:
             return cls.assets[item]
@@ -22,6 +23,7 @@ class Loader:
     A basic loader class used to load fonts and images.
     Used so there is only one place that needs to be changed.
     """
+
     @staticmethod
     def load_image(path: str, width: int | float, height: int | float) -> pg.Surface:
         return pg.transform.smoothscale(
@@ -61,7 +63,8 @@ class Images(metaclass=Assets):
         'J': Loader.load_image(f'{base_path}/Blue.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'L': Loader.load_image(f'{base_path}/Orange.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
         'ghost': Loader.load_image(f'{base_path}/Ghost.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
-        'border': Loader.load_image(f'{base_path}/Border.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
+        'border': Loader.load_image(f'{base_path}/Border.png', Consts.BLOCK_SIZE,
+                                    Consts.BLOCK_SIZE),
         'title': Loader.load_image(f'{base_path}/Title.png', Consts.BLOCK_SIZE * Consts.GRID_WIDTH,
                                    Consts.BLOCK_SIZE * Consts.GRID_WIDTH * .25),
     }

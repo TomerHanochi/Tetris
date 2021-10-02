@@ -26,7 +26,7 @@ class Stats(ViewObject):
             # offset each stat so that it is easier to read
             statistic_y += rendered_stat.get_height() * 2.25
             Context.image(x=self.x + (self.w - rendered_stat.get_width()) * .5,
-                       y=statistic_y, image=rendered_stat)
+                          y=statistic_y, image=rendered_stat)
 
             stat_value = Fonts.statistic.render(str(getattr(self.model, stat_name)), True,
                                                 Colors.statistic)

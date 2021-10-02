@@ -17,8 +17,8 @@ class Held(ViewObject):
 
         # Draws the pre rendered held title
         Context.image(x=self.x + (self.w * Consts.BLOCK_SIZE - self.title.get_width()) * .5,
-                   y=self.y - self.title.get_height() * 1.25,
-                   image=self.title)
+                      y=self.y - self.title.get_height() * 1.25,
+                      image=self.title)
 
         # if there is a held tetromino, draw it
         held = self.model.held_tetromino
@@ -34,8 +34,8 @@ class Held(ViewObject):
             # the height is the difference between the bottom and top blocks
             height = max(ys) - min(ys) + 1
             Context.tetromino(x=self.x + (self.w - width) * Consts.BLOCK_SIZE * .5,
-                           y=self.y + (self.h - height) * Consts.BLOCK_SIZE * .5,
-                           rotation=rotation, name=held)
+                              y=self.y + (self.h - height) * Consts.BLOCK_SIZE * .5,
+                              rotation=rotation, name=held)
 
     @property
     def x(self) -> float:

@@ -15,23 +15,24 @@ class Board(ViewObject):
     def draw(self) -> None:
         # Draws the pre rendered tetris title
         Context.image(x=self.x,
-                   y=self.y - self.title.get_height() * 1.25,
-                   image=self.title)
+                      y=self.y - self.title.get_height() * 1.25,
+                      image=self.title)
 
         Context.border(self.x, self.y, self.w, self.h)
 
         # draws the ghost tetromino
         tetromino = self.model.ghost_tetromino
         Context.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
-                       y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
-                       rotation=tetromino.rotation, name='ghost')
+                          y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
+                          rotation=tetromino.rotation, name='ghost')
 
         # draws current tetromino
         tetromino = self.model.cur_tetromino
         Context.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
-                       y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
-                       rotation=[(i, j) for (i, j) in tetromino.rotation if tetromino.y + j >= 0],
-                       name=tetromino.name)
+                          y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
+                          rotation=[(i, j) for (i, j) in tetromino.rotation
+                                    if tetromino.y + j >= 0],
+                          name=tetromino.name)
 
         # draws all existing blocks in board
         blocks = [(i, j, self.model.board.cells[j][i])
@@ -39,8 +40,8 @@ class Board(ViewObject):
                   if self.model.board.cells[j][i] is not None]
         for (i, j, parent) in blocks:
             Context.image(x=self.x + (i + 1) * Consts.BLOCK_SIZE,
-                       y=self.y + (j + 1) * Consts.BLOCK_SIZE,
-                       image=getattr(Images, parent))
+                          y=self.y + (j + 1) * Consts.BLOCK_SIZE,
+                          image=getattr(Images, parent))
 
     @property
     def x(self) -> float:
