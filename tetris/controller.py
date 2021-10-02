@@ -6,11 +6,11 @@ from tetris.ai.events import Events
 
 
 class Controller:
-    """
-    Handles all user input and the main loop of the game
-    Controls both the view and the model
-    """
     def __init__(self) -> None:
+        """
+        Handles all user input and the main loop of the game
+        Controls both the view and the model
+        """
         self.__model = Model()
         self.__view = View(self.__model)
 

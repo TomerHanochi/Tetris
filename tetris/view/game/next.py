@@ -21,7 +21,7 @@ class Next(ViewObject):
                    image=self.title)
 
         # for each held tetromino, draw it
-        for j, tetromino in enumerate(self.model.next):
+        for j, tetromino in enumerate(self.model.next_tetrominoes):
             rotation = Consts.ROTATIONS[tetromino][0]
             xs = {x for (x, y) in rotation}
             # the width is the difference between the right and left blocks

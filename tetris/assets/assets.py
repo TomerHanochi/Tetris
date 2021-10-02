@@ -1,15 +1,16 @@
-from os.path import abspath
+from __future__ import annotations
+
 import pygame as pg
 
 from tetris.consts import Consts
 
 
-class AssetsType(type):
+class Assets(type):
     """
-    Metaclass used to retrieve data from the assets classes
-    this is so instead of writing Colors.assets['background'] you can just write Colors.background
+    Metaclass used to retrieve data from the assets classes.
+    this is so instead of writing Colors.assets['background'] you can just write Colors.background.
     """
-    def __getattr__(cls, item: str) -> tuple[int, int, int] or pg.font.Font:
+    def __getattr__(cls, item: str) -> tuple[int, int, int] | pg.font.Font | pg.Surface:
         try:
             return cls.assets[item]
         except KeyError:
@@ -18,17 +19,17 @@ class AssetsType(type):
 
 class Loader:
     """
-    A basic loader class used to load fonts and images
-    Used so there is only one place that needs to be changed
+    A basic loader class used to load fonts and images.
+    Used so there is only one place that needs to be changed.
     """
     @staticmethod
-    def load_image(path: str, width: int or float, height: int or float) -> pg.Surface:
+    def load_image(path: str, width: int | float, height: int | float) -> pg.Surface:
         return pg.transform.smoothscale(
             pg.image.load(path), (int(width), int(height))
         )
 
     @staticmethod
-    def load_font(path: str, size: int or float) -> pg.font.Font:
+    def load_font(path: str, size: int | float) -> pg.font.Font:
         return pg.font.Font(path, int(size))
 
     @staticmethod
@@ -36,10 +37,8 @@ class Loader:
         return pg.mixer.Sound(path)
 
 
-class Colors(metaclass=AssetsType):
-    """
-    An assets class that has all the colors
-    """
+class Colors(metaclass=Assets):
+    """ An assets class that has all the colors. """
     assets = {
         'background': (0, 0, 0),
         'title': (255, 255, 255),
@@ -50,10 +49,8 @@ class Colors(metaclass=AssetsType):
     }
 
 
-class Images(metaclass=AssetsType):
-    """
-    An assets class with all of the images
-    """
+class Images(metaclass=Assets):
+    """ An assets class with all of the images. """
     base_path = f'{Consts.BASE_PATH}/assets/images'
     assets = {
         'O': Loader.load_image(f'{base_path}/Yellow.png', Consts.BLOCK_SIZE, Consts.BLOCK_SIZE),
@@ -70,10 +67,8 @@ class Images(metaclass=AssetsType):
     }
 
 
-class Fonts(metaclass=AssetsType):
-    """
-    An assets class with all of the fonts
-    """
+class Fonts(metaclass=Assets):
+    """ An assets class with all of the fonts. """
     base_path = f'{Consts.BASE_PATH}/assets/fonts'
     assets = {
         'title': Loader.load_font(f'{base_path}/pixel.ttf', Consts.BLOCK_SIZE * 2),
@@ -83,7 +78,7 @@ class Fonts(metaclass=AssetsType):
     }
 
 
-class Sounds(metaclass=AssetsType):
+class Sounds(metaclass=Assets):
     """
     An assets class with all of the sounds
     """

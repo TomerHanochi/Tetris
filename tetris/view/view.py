@@ -14,21 +14,20 @@ from tetris.consts import Consts
 
 
 class View:
-    """
-    The class responsible for the gui of the game
-    """
     def __init__(self, model: Model) -> None:
+        """
+        The class responsible for the gui of the game
+        """
         self.__w, self.__h = Consts.SCREEN_SIZE
         # the pygame display/window
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
         self.__model = model
-        # the max fps the game can run in
-        self.__fps = Consts.FRAME_RATE
-        # a clock to ensure the game runs at that constant fps
+        # a clock to ensure the game runs at a constant fps
         self.__fps_clock = pg.time.Clock()
-        # the stacking layers of the gui to choose what gets printed over what
+        # the stacking layers of the gui to choose what gets drawn over what
         self.__layers = []
         self.setup_game()
+        # plays the tetris music on repeat
         Sounds.music.play(loops=-1)
 
     def click(self) -> None:
@@ -82,8 +81,8 @@ class View:
 
         pg.display.flip()
 
-        # used to make sure the game runs at a stable fps
-        self.__fps_clock.tick(self.__fps)
+        # used to make sure the game runs at a constant fps
+        self.__fps_clock.tick(Consts.FRAME_RATE)
 
     @property
     def layers(self) -> list[list[ViewObject]]:

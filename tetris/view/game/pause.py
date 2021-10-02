@@ -1,4 +1,4 @@
-from tetris.assets.assets import Images, Fonts, Colors
+from tetris.assets.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.draw import Draw
 from tetris.model.model import Model

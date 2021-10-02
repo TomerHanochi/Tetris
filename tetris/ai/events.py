@@ -2,6 +2,7 @@ import pygame as pg
 
 
 class Events:
+    """ Events class used to make library switching easier. """
     @staticmethod
     def post(event_: pg.event.Event) -> None:
         pg.event.post(event_)

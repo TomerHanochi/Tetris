@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
 
 from tetris.consts import Consts
@@ -21,17 +22,17 @@ class Algorithm:
     @staticmethod
     def get_rotations(tetromino: str) -> int:
         """
-        :param tetromino: a tetromino name
-        :return: The number of rotations available for the piece
+        :param tetromino: a tetromino name.
+        :return: The number of rotations available for the piece.
         """
         return len(Consts.ROTATIONS[tetromino])
 
     @staticmethod
     def get_right(tetromino: str, rotation: int) -> int:
         """
-        :param tetromino: a tetromino name
-        :param rotation: current rotation
-        :return: The number of blocks possible for the piece to move right
+        :param tetromino: a tetromino name.
+        :param rotation: current rotation.
+        :return: The number of blocks possible for the piece to move right.
         """
         # the rightmost x index in the rotation
         rightest = max(Consts.ROTATIONS[tetromino][rotation], key=lambda x: x[0])[0]
@@ -40,9 +41,9 @@ class Algorithm:
     @staticmethod
     def get_left(tetromino: str, rotation: int) -> int:
         """
-        :param tetromino: a tetromino name
-        :param rotation: current rotation
-        :return: The number of blocks possible for the piece to move left
+        :param tetromino: a tetromino name.
+        :param rotation: current rotation.
+        :return: The number of blocks possible for the piece to move left.
         """
         # the leftmost x index in the rotation
         leftest = min(Consts.ROTATIONS[tetromino][rotation], key=lambda x: x[0])[0]
@@ -51,8 +52,8 @@ class Algorithm:
     @staticmethod
     def get_moves(tetromino: str) -> list[Move]:
         """
-        :param tetromino: a tetromino name
-        :return: A list of all moves possible for the given tetromino
+        :param tetromino: a tetromino name.
+        :return: A list of all moves possible for the given tetromino.
         """
         moves = []
         for rotation in range(Algorithm.get_rotations(tetromino)):
@@ -64,12 +65,12 @@ class Algorithm:
         return moves
 
     @staticmethod
-    def calc_score(cells: list[list[str or None]], network: Network) -> float:
+    def calc_score(cells: list[list[str | None]], network: Network) -> float:
         """
-        Calculate a fitness score for the given board state
-        :param cells: a matrix representing the board state
-        :param network: a neural network with which to calculate the score
-        :return: a fitness score for the current state
+        Calculate a fitness score for the given board state.
+        :param cells: a matrix representing the board state.
+        :param network: a neural network with which to calculate the score.
+        :return: a fitness score for the current state.
         """
         inputs = Heuristics.get(cells=[
             [0 if cell is None else 1 for cell in row] for row in cells
@@ -78,6 +79,14 @@ class Algorithm:
 
     @staticmethod
     def score_move(board: Board, tetromino: Tetromino, move: Move, network: Network) -> float:
+        """
+        Does a move on a given board and scores it based on the given neural network.
+        :param board: a board with the current board state.
+        :param tetromino: a tetromino.
+        :param move: a move.
+        :param network: a neural network.
+        :return: score of the given move.
+        """
         for _ in range(move.rotation):
             tetromino.rotate_right(board.cells)
 
@@ -96,7 +105,13 @@ class Algorithm:
         return score
 
     @staticmethod
-    def best_move(cells: list[list[str or None]], tetromino_name: str, network: Network) -> Move:
+    def best_move(cells: list[list[str | None]], tetromino_name: str, network: Network) -> Move:
+        """
+        :param cells: the current board state.
+        :param tetromino_name: the name of the tetromino.
+        :param network: a neural network.
+        :return: the best move for the given board state and tetromino.
+        """
         board = Board(cells=cells)
         tetromino = Tetromino(name=tetromino_name)
         best_move = Move()
@@ -106,14 +121,23 @@ class Algorithm:
             if move > best_move:
                 best_move = move
 
+            # Restarts the board to its initial state
             board.cells = cells
             tetromino.__init__(tetromino_name)
 
         return best_move
 
     @staticmethod
-    def do_move(cells: list[list[str or None]], cur_tetromino: str, next_tetromino: str,
-                held_tetromino: str or None, network: Network) -> None:
+    def do_move(cells: list[list[str | None]], cur_tetromino: str, next_tetromino: str,
+                held_tetromino: str | None, network: Network) -> None:
+        """
+        Finds the best move and sends the appropriate events for it to be done.
+        :param cells: the current board state.
+        :param cur_tetromino: the current tetromino.
+        :param next_tetromino: the next tetromino.
+        :param held_tetromino: teh held tetromino, if there is one.
+        :param network: a neural network.
+        """
         best_move = Algorithm.best_move(cells, cur_tetromino, network)
         if held_tetromino is None:
             alt_best_move = Algorithm.best_move(cells, next_tetromino, network)

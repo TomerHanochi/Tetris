@@ -1,7 +1,7 @@
 from tetris.consts import Consts
 from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
-from tetris.model.tetromino_set import TetrominoSet
+from tetris.model.tetromino_set import TetrominoQueue
 from tetris.model.ghost_tetromino import GhostTetromino
 from tetris.ai.algorithm import Algorithm
 from tetris.ai.vector import Vector
@@ -9,17 +9,10 @@ from tetris.ai.network import Network
 
 
 class Model:
-    """
-    The main data structure for the game, includes:
-    1. All Blocks
-    2. Current tetromino
-    3. Held tetromino
-    4. Next Tetrominoes
-    5. Ghost Tetrominoes
-    """
     def __init__(self) -> None:
-        self.__tetromino_set = TetrominoSet()
-        self.__cur_tetromino = Tetromino(self.__tetromino_set.remove())
+        """ The main data structure for the game. """
+        self.__tetromino_queue = TetrominoQueue()
+        self.__cur_tetromino = Tetromino(self.__tetromino_queue.remove())
         self.__ghost_tetromino = GhostTetromino(x=self.cur_tetromino.x, y=self.cur_tetromino.y,
                                                 rotation=self.cur_tetromino.rotation)
         self.__board = Board()
@@ -30,8 +23,11 @@ class Model:
 
         # whether the ai or the player is playing
         self.__use_ai = False
+        # the weights for the network
         weights = open(f'{Consts.BASE_PATH}/ai/best_network.txt', 'r').read().split(', ')
+        # the network that will find which move to use
         self.__network = Network(weights=Vector(map(float, weights)))
+
         # should: whether the command for the block to move was called
         # cooldown: the number of frames before a block moves
         self.__should_move_right = False
@@ -41,6 +37,8 @@ class Model:
         self.__should_soft_drop = False
         self.__soft_drop_cooldown = 0
         self.__move_down_cooldown = 0
+        # the number of frames after a block cant move down before it is switched
+        # used to allow a few frames of movement after soft dropping or regular dropping
         self.__lock_cooldown = Consts.LOCK_COOLDOWN
 
         # whether the game was paused
@@ -52,6 +50,15 @@ class Model:
         self.__high_score = int(open(f'{Consts.BASE_PATH}/model/highscore.txt', 'r').read())
 
     def update(self) -> None:
+        """
+        Updates the model. Responsible for:
+            1. Movement
+            2. Lowering cooldowns
+            3. Updating the ghost tetromino
+            4. Switching the current piece when it can't move anymore
+            5. Clearing rows
+            6. Resetting held usage
+        """
         if self.__pause_cooldown > 0:
             self.__pause_cooldown -= 1
 
@@ -81,14 +88,14 @@ class Model:
                 self.__move_down_cooldown -= 1
 
             # if there aren't enough tetrominoes in the set, generate new ones
-            if len(self.__tetromino_set) <= Consts.NEXT_SET_SIZE:
-                self.__tetromino_set.generate_new_tetrominoes()
+            if len(self.__tetromino_queue) <= Consts.NEXT_SET_SIZE:
+                self.__tetromino_queue.generate_new_tetrominoes()
 
             if self.can_move_down:
                 if self.__use_ai:
                     Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
-                                      next_tetromino=self.__tetromino_set.get_next()[0],
-                                      held_tetromino=self.held_tetromino, network=self.__network)
+                                      next_tetromino=self.next_tetromino, network=self.__network,
+                                      held_tetromino=self.held_tetromino)
                 self.move_down()
             elif self.__lock_cooldown > 0:
                 self.__lock_cooldown -= 1
@@ -104,7 +111,7 @@ class Model:
                     self.__score += Consts.ROW_CLEAR_MULT[cleared - 1] * (self.level + 1)
 
                 # replace tetromino
-                self.__cur_tetromino.__init__(self.__tetromino_set.remove())
+                self.__cur_tetromino.__init__(self.__tetromino_queue.remove())
                 # reset held 'cooldown'
                 self.__can_be_held = True
 
@@ -181,7 +188,7 @@ class Model:
                 # create a copy of the current tetromino
                 self.__held_tetromino = self.cur_tetromino.name
                 # switch the current one to a new one from the set
-                self.__cur_tetromino.__init__(self.__tetromino_set.remove())
+                self.__cur_tetromino.__init__(self.__tetromino_queue.remove())
             else:
                 # switch the held and current tetrominoes
                 temp = self.__cur_tetromino.name
@@ -210,18 +217,17 @@ class Model:
 
     @property
     def terminal(self) -> bool:
-        """whether the game has ended"""
+        """ Whether the game has ended. """
         return any(cell is not None for cell in self.board.cells[0])
 
     @property
-    def next(self) -> list[str]:
-        """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
-        return self.__tetromino_set.get_next()
+    def next_tetrominoes(self) -> list[str]:
+        """ Get a list of the next Const.NEXT_SET_SIZE tetromino names. """
+        return self.__tetromino_queue.get_next()
 
     @property
     def next_tetromino(self) -> str:
-        """get a list of the next Const.NEXT_SET_SIZE tetromino names"""
-        return self.next[0]
+        return self.next_tetrominoes[0]
 
     @property
     def cur_tetromino(self) -> Tetromino:
@@ -253,8 +259,8 @@ class Model:
 
     @property
     def level(self) -> int:
-        # the level increases for every ten rows cleared and caps at 28
-        level = int(self.cleared * .1)
+        """ The level increases for every ten rows cleared and caps at 28. """
+        level = self.cleared // 10
         return level if level < 28 else 28
 
     @property

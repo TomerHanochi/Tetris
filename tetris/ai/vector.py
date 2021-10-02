@@ -1,67 +1,73 @@
 from __future__ import annotations
-
 import math
-from random import choice, uniform
 
 
-class Vector:
-    def __init__(self, iterable: iter) -> None:
-        """ Create a vector, example: v = Vector(1,2) """
-        self.__values = tuple(map(float, iterable))
+class Vector(tuple):
+    def __new__(cls, iterable: iter) -> Vector:
+        """ An immutable vector based on a tuple. """
+        return super().__new__(cls, iterable)
 
     def magnitude(self) -> float:
-        """ Returns the magnitude of the vector """
+        """ Returns the magnitude/length of the vector. """
         return math.sqrt(sum(x * x for x in self))
 
-    def normalize(self) -> Vector:
-        """ normalizes a vector """
+    def normalized(self) -> Vector:
+        """ Returns a new vector that is equal to normalized self. """
         mag = self.magnitude()
-        self.__values = tuple(x / mag for x in self)
-        return self
+        return self.__class__(x / mag for x in self)
 
-    def dot(self, vector) -> float:
-        """ Returns the dot product of self and another vector"""
+    def dot(self, vector: Vector) -> float:
+        """ Returns the dot product of self and another vector. """
         if not isinstance(vector, Vector):
             raise ValueError('The dot product requires another vector')
         return sum(a * b for a, b in zip(self, vector))
 
-    def mutate(self, power: float) -> None:
-        mutation = choice(range(len(self)))
-        self.__values = tuple(
-            x if i != mutation else x + uniform(-power, power) for i, x in enumerate(self)
-        )
-
-    def __mul__(self, other) -> Vector or float:
+    def __mul__(self, other: Vector | int | float) -> Vector | float:
         """
-        Returns the dot product of self and other if multiplied
-        by another Vector.  If multiplied by an int or float,
-        multiplies each component by other.
+        :param other: a vector, or a scalar.
+        :return: if other is a vector, return self and other's dot product.
+                 if other is a scalar, return a new vector with each value of self multiplied
+                 by other.
         """
         if isinstance(other, Vector):
             return self.dot(other)
         elif isinstance(other, (int, float)):
             return self.__class__(a * other for a in self)
         else:
-            raise ValueError(f'Multiplication with type {type(other)} not supported')
+            raise ValueError(f'Multiplication with type {other.__class__.__name__} not supported')
 
-    def __rmul__(self, other) -> Vector:
+    def __rmul__(self, other: Vector | int | float) -> Vector | float:
         return self.__mul__(other)
 
-    def __truediv__(self, other) -> Vector:
+    def __truediv__(self, other: Vector | int | float) -> Vector:
+        """
+        :param other: a vector, or a scalar
+        :return: if other is a vector, return a new vector with each value of self divided by the
+                 respective value of other
+                 if other is a scalar, return a new vector with each value of self divided
+                 by other
+        """
         if isinstance(other, Vector):
-            divided = tuple(self[i] / other[i] for i in range(len(self)))
+            divided = (a / b for a, b in zip(self, other))
         elif isinstance(other, (int, float)):
-            divided = tuple(a / other for a in self)
+            divided = (a / other for a in self)
         else:
-            raise ValueError(f'Division with type {type(other)} not supported')
+            raise ValueError(f'Division with type {other.__class__.__name__} not supported')
 
         return self.__class__(divided)
 
     def __add__(self, other) -> Vector:
+        """
+        :param other: a vector, or a scalar.
+        :return: if other is a vector, return a new vector with each value of self added with the
+                 respective value of other.
+                 if other is a scalar, return a new vector with each value of self added with
+                 other.
+        """
         if isinstance(other, Vector):
-            added = tuple(a + b for a, b in zip(self, other))
+            added = (a + b for a, b in zip(self, other))
         elif isinstance(other, (int, float)):
-            added = tuple(a + other for a in self)
+            added = (a + other for a in self)
         else:
             raise ValueError(f'Addition with type {type(other)} not supported')
 
@@ -71,10 +77,17 @@ class Vector:
         return self.__add__(other)
 
     def __sub__(self, other) -> Vector:
+        """
+        :param other: a vector, or a scalar.
+        :return: if other is a vector, return a new vector with each value of self subbed with the
+                 respective value of other.
+                 if other is a scalar, return a new vector with each value of self subbed with
+                 other.
+        """
         if isinstance(other, Vector):
-            subbed = tuple(a - b for a, b in zip(self, other))
+            subbed = (a - b for a, b in zip(self, other))
         elif isinstance(other, (int, float)):
-            subbed = tuple(a - other for a in self)
+            subbed = (a - other for a in self)
         else:
             raise ValueError(f'Subtraction with type {type(other)} not supported')
 
@@ -83,14 +96,5 @@ class Vector:
     def __rsub__(self, other) -> Vector:
         return self.__sub__(other)
 
-    def __iter__(self) -> iter:
-        return iter(self.__values)
-
-    def __len__(self) -> int:
-        return len(self.__values)
-
-    def __getitem__(self, key) -> float or int:
-        return self.__values[key]
-
     def __repr__(self) -> str:
-        return f'Vector{repr(self.__values)!s}'
+        return f'Vector{tuple(a for a in self)!r}'

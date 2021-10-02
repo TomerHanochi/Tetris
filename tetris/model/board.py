@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 from tetris.consts import Consts
 from tetris.model.tetromino import Tetromino
 from tetris.model.ghost_tetromino import GhostTetromino
 
 
 class Board:
-    def __init__(self, cells: list[list[str or None]] = None) -> None:
+    def __init__(self, cells: list[list[str | None]] = None) -> None:
+        """
+        A class representing a tetris board.
+        :param cells: a matrix representing the board state
+        """
         if cells is None:
             self.__cells = [[None for _ in range(Consts.GRID_WIDTH)]
                             for _ in range(Consts.GRID_HEIGHT)]
@@ -12,7 +18,7 @@ class Board:
             self.__cells = [[cell for cell in row] for row in cells]
 
     def add_piece(self, tetromino: Tetromino):
-        """Adds the blocks of a tetromino to the board"""
+        """ Adds the blocks of a tetromino to the board """
         for (i, j) in tetromino.rotation:
             if tetromino.y + j >= 0:
                 # the name is used so it is possible to get the tile image later
@@ -57,7 +63,12 @@ class Board:
                         break
         return len(clearable)
 
-    def hard_drop(self, tetromino: Tetromino or GhostTetromino) -> int:
+    def hard_drop(self, tetromino: Tetromino | GhostTetromino) -> int:
+        """
+        Hard drops a tetromino
+        :param tetromino: a tetromino to hard drop
+        :return: number of rows dropped
+        """
         rows_dropped = 0
         while tetromino.can_move_down(self.cells):
             tetromino.move_down()
@@ -65,11 +76,11 @@ class Board:
         return rows_dropped
 
     @property
-    def cells(self) -> list[list[str or None]]:
+    def cells(self) -> list[list[str | None]]:
         return self.__cells
 
     @cells.setter
-    def cells(self, cells: list[list[str or None]]) -> None:
+    def cells(self, cells: list[list[str | None]]) -> None:
         if len(cells) == Consts.GRID_HEIGHT and len(cells[0]) == Consts.GRID_WIDTH:
             self.__cells = [[cell for cell in row] for row in cells]
         else:
