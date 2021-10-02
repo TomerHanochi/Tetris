@@ -1,4 +1,3 @@
-from random import uniform
 from dataclasses import dataclass, field
 
 from tetris.consts import Consts

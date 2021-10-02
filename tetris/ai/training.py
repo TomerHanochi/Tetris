@@ -7,7 +7,7 @@ from tqdm import tqdm
 from tetris.ai.algorithm import Algorithm
 from tetris.ai.network import Network
 from tetris.ai.population import Population
-from tetris.model.model import Model
+from tetris.model import Model
 from tetris.consts import Consts
 
 
