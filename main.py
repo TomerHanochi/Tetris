@@ -1,4 +1,4 @@
-from tetris import Controller
+from tetris.controller import Controller
 
 
 def main() -> None:

@@ -1,7 +1,7 @@
 import pygame as pg
 
-from tetris.model import Model
-from tetris.view import View
+from tetris.model.model import Model
+from tetris.view.view import View
 from tetris.ai.events import Events
 
 
