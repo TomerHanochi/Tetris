@@ -11,26 +11,49 @@ from tetris.model.model import Model
 from tetris.consts import Consts
 
 
-class Training:
-    workers = cpu_count()
-    generations = 10
-    pop_size = 200
-    eval_epochs = 10
-    test_moves = 500
+class Trainer:
+    def __init__(self, generations: int, pop_size: int, games_per_network: int = 10,
+                 moves_per_game: int = 500, num_of_workers: int = cpu_count()) -> None:
+        """
+        :param generations: number of generations(epochs) to run.
+        :param pop_size: the number of networks that are in the population.
+        :param games_per_network: the number of games(epochs) that are used to evaluate a network.
+                                  used so we know the average fitness for a network.
+        :param moves_per_game: total number of tetromino pieces that the neural network gets.
+                               used to limit the length of games to a fixed size.
+        :param num_of_workers: the amount of processes(cores) the training will run on.
+                               used to train concurrently to save time.
+        """
+        self.num_of_workers = num_of_workers
+        self.generations = generations
+        self.pop_size = pop_size
+        self.games_per_network = games_per_network
+        self.moves_per_game = moves_per_game
 
-    @staticmethod
-    def evaluate_network(network: Network) -> float:
+    def evaluate_network(self, network: Network) -> float:
+        """
+        Evaluates the network based on the number of lines cleared in self.eval_epochs games
+        :param network: a neural network to evaluate
+        :return: total number of lines cleared during self.eval_epochs games
+        """
         model = Model()
         fitness = 0
-        for _ in range(Training.eval_epochs):
+        for _ in range(self.games_per_network):
+            # initiates the model so that each game starts fresh
             model.__init__()
+            # tells the model that the ai is used,
+            # so that there won't be any movement cooldowns
             model.switch_use_ai()
-            for _ in range(Training.test_moves):
+            # runs the game for a limited number of moves
+            for _ in range(self.moves_per_game):
+                # if the game ended, quit
                 if model.terminal:
                     break
                 cells = model.board.cells
                 best_move = Algorithm.best_move(cells=cells, network=network,
                                                 tetromino_name=model.cur_tetromino.name)
+                # if there is no held tetromino, check the next tetromino,
+                # as the current one can be held
                 if model.held_tetromino is None:
                     alt_best_move = Algorithm.best_move(cells=cells, network=network,
                                                         tetromino_name=model.next_tetromino)
@@ -42,6 +65,7 @@ class Training:
                     model.hold()
                     best_move = alt_best_move
 
+                # do the best move
                 for _ in range(best_move.rotation):
                     model.rotate_right()
 
@@ -58,41 +82,57 @@ class Training:
             fitness += model.cleared
         return fitness
 
-    @staticmethod
-    def evaluate_networks(workers: Pool, networks: [list[Network]], epoch: int) -> list[float]:
+    def evaluate_networks(self, workers: Pool, networks: [list[Network]], generation: int) -> list[float]:
+        """
+        :param workers: pool of processors that can be used to concurrently evaluate networks
+        :param networks: all networks that should be evaluated
+        :param generation: generation epoch
+        :return: list of fitnesses of each network
+        """
+        # a progress bar to show the progress of the current generation
         pbar = tqdm(networks)
-        pbar.set_description(f'epoch {epoch}')
+        pbar.set_description(f'generation {generation}')
+        # runs several evaluations concurrently to save time
         return [
-            workers.apply_async(func=Training.evaluate_network, args=(network,)).get()
+            workers.apply_async(func=self.evaluate_network, args=(network,)).get()
             for network in pbar
         ]
 
-    @staticmethod
-    def train() -> None:
-        print(f'Training {Training.pop_size} networks along {Training.generations} generations, '
-              f'using {Training.workers} cores')
-        workers = Pool(Training.workers)
+    def train(self) -> None:
+        """
+        Trains self.pop_size networks to get a really good network.
+        Outputs the top fitness and network of each generation to a log file in
+        tetris/ai/logs with a date and time stamp.
+        """
+        # a pool of processors that can be used to concurrently evaluate networks
+        workers = Pool(self.num_of_workers)
         log_file_name = datetime.now().strftime("%d-%m-%y_%H:%M")
         log_file_path = f'{Consts.BASE_PATH}/ai/logs/{log_file_name}.txt'
+        # creates the file
         open(log_file_path, 'x')
         population = None
-        for i in range(Training.generations):
+        for gen in range(self.generations):
             if population is None:
-                population = Population(size=Training.pop_size)
+                population = Population(size=self.pop_size)
             else:
                 population = Population(old_pop=population)
-            population.fitnesses = Training.evaluate_networks(workers=workers,
-                                                              networks=population.networks,
-                                                              epoch=i)
+            population.fitnesses = self.evaluate_networks(workers=workers,
+                                                          networks=population.networks,
+                                                          generation=gen)
+            # outputs the best network of the current generation and its fitness to the log file
             best_network = population.networks[np.argmax(population.fitnesses)]
-            log = (f'--------epoch {i}--------\n'
+            log = (f'--------epoch {gen}--------\n'
                    f'top fitness={max(population.fitnesses)}\n'
                    f'top weights={best_network.weights}\n')
             open(log_file_path, 'a').write(log)
 
 
 def main() -> None:
-    Training.train()
+    trainer = Trainer(generations=10,
+                      pop_size=200,
+                      games_per_network=10,
+                      moves_per_game=500)
+    trainer.train()
 
 
 if __name__ == '__main__':
