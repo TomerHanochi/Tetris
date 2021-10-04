@@ -92,11 +92,9 @@ class Model:
                 self.__tetromino_queue.generate_new_tetrominoes()
 
             if self.can_move_down:
-                if self.__use_ai:
-                    Algorithm.do_move(cells=self.board.cells, cur_tetromino=self.cur_tetromino.name,
-                                      next_tetromino=self.next_tetromino, network=self.__network,
-                                      held_tetromino=self.held_tetromino)
                 self.move_down()
+                if self.__use_ai:
+                    self.do_ai_move()
             elif self.__lock_cooldown > 0:
                 self.__lock_cooldown -= 1
             # if the current tetromino can't move down, that means it needs to be replaced
@@ -114,6 +112,38 @@ class Model:
                 self.__cur_tetromino.__init__(self.__tetromino_queue.remove())
                 # reset held 'cooldown'
                 self.__can_be_held = True
+
+    def do_ai_move(self) -> None:
+        """ Finds the best move according to the algorithm and does it. """
+        best_move = Algorithm.best_move(self.board.cells, self.cur_tetromino.name,
+                                        self.__network)
+        if self.held_tetromino is None:
+            alt_best_move = Algorithm.best_move(self.board.cells, self.next_tetromino,
+                                                self.__network)
+        else:
+            alt_best_move = Algorithm.best_move(self.board.cells, self.held_tetromino,
+                                                self.__network)
+
+        if alt_best_move > best_move:
+            self.hold()
+            best_move = alt_best_move
+
+        for _ in range(best_move.rotation):
+            self.rotate_right()
+
+        for _ in range(best_move.right):
+            if self.can_move_right:
+                self.move_right()
+            else:
+                break
+
+        for _ in range(best_move.left):
+            if self.can_move_left:
+                self.move_left()
+            else:
+                break
+
+        self.hard_drop()
 
     @property
     def can_move_right(self) -> bool:

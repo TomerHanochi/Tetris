@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from tetris.consts import Consts
 from tetris.ai.network import Network
 from tetris.ai.vector import Vector
-from tetris.ai.events import Events
 from tetris.ai.heuristics import Heuristics
 from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino
@@ -126,35 +125,3 @@ class Algorithm:
             tetromino.__init__(tetromino_name)
 
         return best_move
-
-    @staticmethod
-    def do_move(cells: list[list[str | None]], cur_tetromino: str, next_tetromino: str,
-                held_tetromino: str | None, network: Network) -> None:
-        """
-        Finds the best move and sends the appropriate events for it to be done.
-        :param cells: the current board state.
-        :param cur_tetromino: the current tetromino.
-        :param next_tetromino: the next tetromino.
-        :param held_tetromino: teh held tetromino, if there is one.
-        :param network: a neural network.
-        """
-        best_move = Algorithm.best_move(cells, cur_tetromino, network)
-        if held_tetromino is None:
-            alt_best_move = Algorithm.best_move(cells, next_tetromino, network)
-        else:
-            alt_best_move = Algorithm.best_move(cells, held_tetromino, network)
-
-        if alt_best_move > best_move:
-            Events.post(Events.hold)
-            best_move = alt_best_move
-
-        for _ in range(best_move.rotation):
-            Events.post(Events.rotate_right)
-
-        for _ in range(best_move.right):
-            Events.post(Events.move_right)
-
-        for _ in range(best_move.left):
-            Events.post(Events.move_left)
-
-        Events.post(Events.hard_drop)

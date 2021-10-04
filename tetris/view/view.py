@@ -85,6 +85,9 @@ class View:
         # used to make sure the game runs at a constant fps
         self.__fps_clock.tick(Consts.FRAME_RATE)
 
+    def quit(self) -> None:
+        pg.quit()
+
     @property
     def layers(self) -> list[list[ViewObject]]:
         return self.__layers
