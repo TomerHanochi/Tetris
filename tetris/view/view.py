@@ -35,6 +35,7 @@ class View:
             for view_object in layer:
                 if isinstance(view_object, ClickableViewObject) and view_object.is_clicked:
                     view_object.click()
+                    return
 
     def setup_game(self) -> None:
         # Center part of the screen
