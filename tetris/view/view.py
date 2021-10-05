@@ -1,29 +1,27 @@
 import pygame as pg
 
 from tetris.view.assets import Colors, Sounds
-from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.button import Button
-from tetris.view.events.custom_events import CustomEvents
-from tetris.view.events.event_handler import EventHandler
+from tetris.view.utils.key import Key
 from tetris.view.game.board import Board
 from tetris.view.game.held import Held
 from tetris.view.game.next import Next
 from tetris.view.game.statistics import Stats
 from tetris.view.game.pause import Pause
 from tetris.model.model import Model
+from tetris.controller import Controller
 from tetris.consts import Consts
 
 
 class View:
-    def __init__(self, model: Model) -> None:
-        """
-        The class responsible for the gui of the game
-        """
+    def __init__(self) -> None:
+        """ The class responsible for the gui of the game. """
         self.__w, self.__h = Consts.SCREEN_SIZE
         # the pygame display/window
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
-        self.__model = model
+        self.controller = Controller()
+        self.__model = self.controller.model
         # a clock to ensure the game runs at a constant fps
         self.__fps_clock = pg.time.Clock()
         # the stacking layers of the gui to choose what gets drawn over what
@@ -33,7 +31,7 @@ class View:
         Sounds.music.play(loops=-1)
 
     def click(self) -> None:
-        for layer in reversed(self.layers):
+        for layer in reversed(self.__layers):
             for view_object in layer:
                 if isinstance(view_object, ClickableViewObject) and view_object.is_clicked:
                     view_object.click()
@@ -53,12 +51,12 @@ class View:
         reset_button = Button(x=next_.x,
                               y=next_.y + (next_.h + 1) * Consts.BLOCK_SIZE,
                               text='RESTART',
-                              func=lambda: EventHandler.post(CustomEvents.RESET_GAME))
+                              func=self.controller.reset_game)
 
         use_ai_button = Button(x=next_.x,
                                y=reset_button.y + reset_button.h + Consts.BLOCK_SIZE,
                                text='USE-AI',
-                               func=lambda: EventHandler.post(CustomEvents.SWITCH_USE_AI))
+                               func=self.controller.switch_use_ai)
 
         # Right part of the screen
         held = Held(x=board.x + board.w * Consts.BLOCK_SIZE,
@@ -80,7 +78,7 @@ class View:
         """Clears the screen, then redraws everything"""
         self.__window.fill(Colors.background)
 
-        for layer in self.layers:
+        for layer in self.__layers:
             for view_object in layer:
                 view_object.draw()
 
@@ -90,11 +88,38 @@ class View:
         self.__fps_clock.tick(Consts.FRAME_RATE)
 
     def quit(self) -> None:
+        self.controller.quit()
         pg.quit()
+        exit()
 
-    @property
-    def layers(self) -> list[list[ViewObject]]:
-        return self.__layers
+    def process_input(self) -> None:
+        """ Converts pygame events to controller calls. """
+        for event in pg.event.get():
+            # if the event is a key event, finds the key
+            event_key = None
+            if hasattr(event, 'key'):
+                for key in Key:
+                    if key.value == event.key:
+                        event_key = key
+
+            if event.type == pg.QUIT:
+                self.quit()
+            elif event_key is not None:
+                if event.type == pg.KEYDOWN:
+                    self.controller.key_down(event_key)
+                elif event.type == pg.KEYUP:
+                    self.controller.key_up(event_key)
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                self.click()
+
+    def run(self) -> None:
+        """ Main loop for the game. """
+        while True:
+            self.process_input()
+
+            self.controller.update()
+
+            self.update()
 
     @property
     def model(self) -> Model:

@@ -246,6 +246,11 @@ class Model:
         self.__use_ai = not self.__use_ai
 
     @property
+    def playable(self) -> bool:
+        """ Returns whether the game is not paused and not in a terminal state. """
+        return not self.paused and self.pause_cooldown == 0 and not self.terminal
+
+    @property
     def terminal(self) -> bool:
         """ Whether the game has ended. """
         return any(cell is not None for cell in self.board.cells[0])

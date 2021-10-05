@@ -1,8 +1,8 @@
-from tetris.controller import Controller
+from tetris.view.view import View
 
 
 def main() -> None:
-    game = Controller()
+    game = View()
     game.run()
 
 
