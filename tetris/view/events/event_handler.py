@@ -23,3 +23,7 @@ class EventHandler:
                         cur_key = key
                 events.append(Event(event_type=cur_event_type, key=cur_key))
         return events
+
+    @staticmethod
+    def post(event: pg.event.Event) -> None:
+        pg.event.post(event)

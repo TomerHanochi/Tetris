@@ -56,6 +56,10 @@ class Controller:
             self.player_key_up(event.key)
         elif event.type == EventType.MOUSE_CLICKED:
             self.__view.click()
+        elif event.type == EventType.RESET_GAME:
+            self.__model.reset()
+        elif event.type == EventType.SWITCH_USE_AI:
+            self.__model.switch_use_ai()
 
     def run(self) -> None:
         # main loop for the game

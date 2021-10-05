@@ -4,6 +4,8 @@ from tetris.view.assets import Colors, Sounds
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.button import Button
+from tetris.view.events.custom_events import CustomEvents
+from tetris.view.events.event_handler import EventHandler
 from tetris.view.game.board import Board
 from tetris.view.game.held import Held
 from tetris.view.game.next import Next
@@ -50,11 +52,13 @@ class View:
 
         reset_button = Button(x=next_.x,
                               y=next_.y + (next_.h + 1) * Consts.BLOCK_SIZE,
-                              text='RESTART', func=self.model.reset)
+                              text='RESTART',
+                              func=lambda: EventHandler.post(CustomEvents.RESET_GAME))
 
         use_ai_button = Button(x=next_.x,
                                y=reset_button.y + reset_button.h + Consts.BLOCK_SIZE,
-                               text='USE-AI', func=self.__model.switch_use_ai)
+                               text='USE-AI',
+                               func=lambda: EventHandler.post(CustomEvents.SWITCH_USE_AI))
 
         # Right part of the screen
         held = Held(x=board.x + board.w * Consts.BLOCK_SIZE,

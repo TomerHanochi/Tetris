@@ -8,3 +8,5 @@ class EventType(Enum):
     KEY_UP = KEYUP
     MOUSE_CLICKED = MOUSEBUTTONDOWN
     QUIT = QUIT
+    RESET_GAME = event.custom_type()
+    SWITCH_USE_AI = event.custom_type()
