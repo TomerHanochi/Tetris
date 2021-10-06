@@ -1,18 +1,17 @@
+from tetris.controller.view_info import ViewInfo
 from tetris.view.assets import Images, Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.context import Context
-from tetris.model.model import Model
 from tetris.consts import Consts
 
 
 class Board(ViewObject):
-    def __init__(self, x: float, y: float, model: Model) -> None:
+    def __init__(self, x: float, y: float) -> None:
         self.__x = x
         self.__y = y
-        self.__model = model
         self.title = Fonts.title.render('TETRIS', True, Colors.title)
 
-    def draw(self) -> None:
+    def draw(self, view_info: ViewInfo) -> None:
         # Draws the pre rendered tetris title
         Context.image(x=self.x,
                       y=self.y - self.title.get_height() * 1.25,
@@ -21,27 +20,21 @@ class Board(ViewObject):
         Context.border(self.x, self.y, self.w, self.h)
 
         # draws the ghost tetromino
-        tetromino = self.model.ghost_tetromino
-        Context.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
-                          y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
-                          rotation=tetromino.rotation, name='ghost')
+        Context.tetromino(x=self.x + (view_info.ghost_tetromino_x + 1) * Consts.BLOCK_SIZE,
+                          y=self.y + (view_info.ghost_tetromino_y + 1) * Consts.BLOCK_SIZE,
+                          rotation=view_info.ghost_tetromino_rotation, name='ghost')
 
         # draws current tetromino
-        tetromino = self.model.cur_tetromino
-        Context.tetromino(x=self.x + (tetromino.x + 1) * Consts.BLOCK_SIZE,
-                          y=self.y + (tetromino.y + 1) * Consts.BLOCK_SIZE,
-                          rotation=[(i, j) for (i, j) in tetromino.rotation
-                                    if tetromino.y + j >= 0],
-                          name=tetromino.name)
+        Context.tetromino(x=self.x + (view_info.cur_tetromino_x + 1) * Consts.BLOCK_SIZE,
+                          y=self.y + (view_info.cur_tetromino_y + 1) * Consts.BLOCK_SIZE,
+                          rotation=view_info.cur_tetromino_rotation,
+                          name=view_info.cur_tetromino)
 
         # draws all existing blocks in board
-        blocks = [(i, j, self.model.board.cells[j][i])
-                  for i in range(Consts.GRID_WIDTH) for j in range(Consts.GRID_HEIGHT)
-                  if self.model.board.cells[j][i] is not None]
-        for (i, j, parent) in blocks:
+        for (i, j, name) in view_info.blocks:
             Context.image(x=self.x + (i + 1) * Consts.BLOCK_SIZE,
                           y=self.y + (j + 1) * Consts.BLOCK_SIZE,
-                          image=getattr(Images, parent))
+                          image=getattr(Images, name))
 
     @property
     def x(self) -> float:
@@ -58,7 +51,3 @@ class Board(ViewObject):
     @property
     def h(self) -> int:
         return Consts.GRID_HEIGHT + 2
-
-    @property
-    def model(self) -> Model:
-        return self.__model

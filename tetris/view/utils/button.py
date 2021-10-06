@@ -1,5 +1,6 @@
 from typing import Callable
 
+from tetris.controller.view_info import ViewInfo
 from tetris.view.assets import Colors, Fonts
 from tetris.view.utils.clickable_view_object import ClickableViewObject
 from tetris.view.utils.context import Context
@@ -23,7 +24,7 @@ class Button(ClickableViewObject):
     def click(self, *args) -> None:
         self.func(*args)
 
-    def draw(self) -> None:
+    def draw(self, view_info: ViewInfo) -> None:
         # the offset is to make sure the background is bigger than the text
         offset = 0.05
         Context.fill(x=self.__x - self.__w * offset, y=self.__y - self.__h * offset,

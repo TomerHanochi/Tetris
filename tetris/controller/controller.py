@@ -1,4 +1,5 @@
 from tetris.model.model import Model
+from tetris.controller.view_info import ViewInfo
 from tetris.view.utils.key import Key
 
 
@@ -47,5 +48,5 @@ class Controller:
         self.__model.set_high_score()
 
     @property
-    def model(self) -> Model:
-        return self.__model
+    def view_info(self) -> ViewInfo:
+        return ViewInfo(self.__model)

@@ -1,18 +1,17 @@
+from tetris.controller.view_info import ViewInfo
 from tetris.view.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.context import Context
-from tetris.model.model import Model
 from tetris.consts import Consts
 
 
 class Held(ViewObject):
-    def __init__(self, x: float, y: float, model: Model) -> None:
+    def __init__(self, x: float, y: float) -> None:
         self.__x = (Consts.SCREEN_WIDTH + x - self.w * Consts.BLOCK_SIZE) * .5
         self.__y = y
-        self.__model = model
         self.title = Fonts.sub_title.render('HELD', True, Colors.sub_title)
 
-    def draw(self) -> None:
+    def draw(self, view_info: ViewInfo) -> None:
         Context.border(self.x, self.y, self.w, self.h)
 
         # Draws the pre rendered held title
@@ -21,7 +20,7 @@ class Held(ViewObject):
                       image=self.title)
 
         # if there is a held tetromino, draw it
-        held = self.model.held_tetromino
+        held = view_info.held_tetromino
         if held is not None:
             rotation = Consts.ROTATIONS[held][0]
             # the further calculations are used to center the tetromino
@@ -52,7 +51,3 @@ class Held(ViewObject):
     @property
     def h(self) -> int:
         return 6
-
-    @property
-    def model(self) -> Model:
-        return self.__model

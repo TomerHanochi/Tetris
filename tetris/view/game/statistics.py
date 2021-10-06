@@ -1,13 +1,12 @@
+from tetris.controller.view_info import ViewInfo
 from tetris.view.assets import Fonts, Colors
 from tetris.view.utils.view_object import ViewObject
 from tetris.view.utils.context import Context
-from tetris.model.model import Model
 from tetris.consts import Consts
 
 
 class Stats(ViewObject):
-    def __init__(self, x: float, y: float, model: Model) -> None:
-        # the stat name has to match the name of the attribute in the model
+    def __init__(self, x: float, y: float) -> None:
         self.stats = {
             stat: Fonts.statistic.render(stat.upper().replace('_', ' '), True, Colors.statistic)
             for stat in ('high_score', 'score', 'level', 'cleared')
@@ -18,9 +17,8 @@ class Stats(ViewObject):
         self.__h = Fonts.statistic.get_height() * 4.5 * len(self.stats)
         self.__x = (Consts.SCREEN_WIDTH + x - self.w) * .5
         self.__y = (Consts.SCREEN_HEIGHT + y - self.h) * .5
-        self.__model = model
 
-    def draw(self) -> None:
+    def draw(self, view_info: ViewInfo) -> None:
         statistic_y = self.y
         for stat_name, rendered_stat in self.stats.items():
             # offset each stat so that it is easier to read
@@ -28,7 +26,7 @@ class Stats(ViewObject):
             Context.image(x=self.x + (self.w - rendered_stat.get_width()) * .5,
                           y=statistic_y, image=rendered_stat)
 
-            stat_value = Fonts.statistic.render(str(getattr(self.model, stat_name)), True,
+            stat_value = Fonts.statistic.render(str(getattr(view_info, stat_name)), True,
                                                 Colors.statistic)
             # offset each stat value so that it is easier to read
             statistic_y += stat_value.get_height() * 1.25
@@ -49,7 +47,3 @@ class Stats(ViewObject):
     @property
     def h(self) -> int:
         return self.__h
-
-    @property
-    def model(self) -> Model:
-        return self.__model
