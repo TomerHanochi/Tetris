@@ -1,3 +1,4 @@
+from __future__ import annotations
 from random import shuffle
 
 from tetris.consts import Consts

@@ -41,7 +41,7 @@ class Controller:
     def update(self) -> None:
         self.__model.update()
 
-    def reset_game(self) -> None:
+    def reset(self) -> None:
         self.__model.reset()
 
     def quit(self) -> None:

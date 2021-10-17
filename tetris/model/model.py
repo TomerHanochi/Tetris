@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tetris.consts import Consts
 from tetris.model.board import Board
 from tetris.model.tetromino import Tetromino

@@ -19,7 +19,7 @@ class View:
         self.__w, self.__h = Consts.SCREEN_SIZE
         # the pygame display/window
         self.__window = pg.display.set_mode(Consts.SCREEN_SIZE)
-        self.controller = Controller()
+        self.__controller = Controller()
         # a clock to ensure the game runs at a constant fps
         self.__fps_clock = pg.time.Clock()
         # the stacking layers of the gui to choose what gets drawn over what
@@ -47,12 +47,12 @@ class View:
         reset_button = Button(x=next_.x,
                               y=next_.y + (next_.h + 1) * Consts.BLOCK_SIZE,
                               text='RESTART',
-                              func=self.controller.reset_game)
+                              func=self.__controller.reset)
 
         use_ai_button = Button(x=next_.x,
                                y=reset_button.y + reset_button.h + Consts.BLOCK_SIZE,
                                text='USE-AI',
-                               func=self.controller.switch_use_ai)
+                               func=self.__controller.switch_use_ai)
 
         # Right part of the screen
         held = Held(x=board.x + board.w * Consts.BLOCK_SIZE,
@@ -69,7 +69,7 @@ class View:
         ]
 
     def quit(self) -> None:
-        self.controller.quit()
+        self.__controller.quit()
         pg.quit()
         exit()
 
@@ -87,9 +87,9 @@ class View:
                 self.quit()
             elif event_key is not None:
                 if event.type == pg.KEYDOWN:
-                    self.controller.key_down(event_key)
+                    self.__controller.key_down(event_key)
                 elif event.type == pg.KEYUP:
-                    self.controller.key_up(event_key)
+                    self.__controller.key_up(event_key)
             elif event.type == pg.MOUSEBUTTONDOWN:
                 self.click()
 
@@ -97,7 +97,7 @@ class View:
         """Clears the screen, then redraws everything"""
         self.__window.fill(Colors.background)
 
-        view_info = self.controller.view_info
+        view_info = self.__controller.view_info
         for layer in self.__layers:
             for view_object in layer:
                 view_object.draw(view_info)
@@ -112,7 +112,7 @@ class View:
         while True:
             self.process_input()
 
-            self.controller.update()
+            self.__controller.update()
 
             self.update()
 
