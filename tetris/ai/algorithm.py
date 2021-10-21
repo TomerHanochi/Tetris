@@ -1,5 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
+from typing import Iterable
 
 from tetris.consts import Consts
 from tetris.ai.network import Network
@@ -48,20 +49,22 @@ class Algorithm:
         leftest = min(Consts.ROTATIONS[tetromino][rotation], key=lambda x: x[0])[0]
         return Consts.STARTING_X + leftest + 1
 
-    @staticmethod
-    def get_moves(tetromino: str) -> list[Move]:
+    @classmethod
+    def get_moves(cls, tetromino: str) -> Iterable[Move]:
         """
+        Get all possible moves for a given tetromino
         :param tetromino: a tetromino name.
         :return: A list of all moves possible for the given tetromino.
         """
-        moves = []
-        for rotation in range(Algorithm.get_rotations(tetromino)):
-            moves.append(Move(rotation=rotation))
-            for right in range(1, Algorithm.get_right(tetromino, rotation=rotation)):
-                moves.append(Move(right=right, rotation=rotation))
-            for left in range(1, Algorithm.get_left(tetromino, rotation=rotation)):
-                moves.append(Move(left=left, rotation=rotation))
-        return moves
+        for rotation in range(cls.get_rotations(tetromino)):
+            # stay in place
+            yield Move(rotation=rotation)
+            # all moves to the right
+            for right in range(1, cls.get_right(tetromino, rotation=rotation)):
+                yield Move(right=right, rotation=rotation)
+            # all moves to the left
+            for left in range(1, cls.get_left(tetromino, rotation=rotation)):
+                yield Move(left=left, rotation=rotation)
 
     @staticmethod
     def calc_score(cells: list[list[str | None]], network: Network) -> float:
@@ -76,8 +79,8 @@ class Algorithm:
         ])
         return network.activate(Vector(inputs))
 
-    @staticmethod
-    def score_move(board: Board, tetromino: Tetromino, move: Move, network: Network) -> float:
+    @classmethod
+    def score_move(cls, board: Board, tetromino: Tetromino, move: Move, network: Network) -> float:
         """
         Does a move on a given board and scores it based on the given neural network.
         :param board: a board with the current board state.
@@ -99,12 +102,12 @@ class Algorithm:
 
         board.hard_drop(tetromino)
         board.add_piece(tetromino)
-        score = Algorithm.calc_score(board.cells, network)
+        score = cls.calc_score(board.cells, network)
 
         return score
 
-    @staticmethod
-    def best_move(cells: list[list[str | None]], tetromino_name: str, network: Network) -> Move:
+    @classmethod
+    def best_move(cls, cells: list[list[str | None]], tetromino_name: str, network: Network) -> Move:
         """
         :param cells: the current board state.
         :param tetromino_name: the name of the tetromino.
@@ -114,9 +117,9 @@ class Algorithm:
         board = Board(cells=cells)
         tetromino = Tetromino(name=tetromino_name)
         best_move = Move()
-        moves = Algorithm.get_moves(tetromino_name)
+        moves = cls.get_moves(tetromino_name)
         for move in moves:
-            move.score = Algorithm.score_move(board, tetromino, move, network)
+            move.score = cls.score_move(board, tetromino, move, network)
             if move > best_move:
                 best_move = move
 
